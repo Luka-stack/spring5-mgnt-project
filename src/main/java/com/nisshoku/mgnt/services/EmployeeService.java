@@ -8,8 +8,8 @@ public interface EmployeeService {
 
     List<EmployeeDTO> getAllEmployees();
     //TODO implement this
-    //List<EmployeeDTO> getEmployeesByLanguage();
-    //List<EmployeeDTO> getEmployeesByLastName(String lastName);
+    //List<EmployeeBaseDTO> getEmployeesByLanguage();
+    //List<EmployeeBaseDTO> getEmployeesByLastName(String lastName);
 
-    //EmployeeDTO getEmployeeById(Integer id);
+    //EmployeeBaseDTO getEmployeeById(Integer id);
 }

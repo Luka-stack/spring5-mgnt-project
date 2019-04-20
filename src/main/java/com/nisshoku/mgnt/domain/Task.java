@@ -27,6 +27,6 @@ public class Task extends BaseEntity {
     @Size(min=10, max=255)
     private String description;
 
-    @ManyToOne
-    private Project project;
+ /*   @ManyToOne
+    private Project project;*/
 }

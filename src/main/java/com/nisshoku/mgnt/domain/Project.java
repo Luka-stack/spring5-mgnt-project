@@ -37,6 +37,6 @@ public class Project extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "employee_id"))
     private Set<Employee> employees = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
-    private Set<Task> tasks = new HashSet<>();
+    /*@OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
+    private Set<Task> tasks = new HashSet<>();*/
 }

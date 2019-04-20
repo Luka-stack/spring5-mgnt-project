@@ -1,26 +1,18 @@
 package com.nisshoku.mgnt.api.v1.domain;
 
-import com.nisshoku.mgnt.domain.Employee;
-import com.nisshoku.mgnt.domain.Task;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectDTO {
+public class ProjectDTO extends ProjectBaseDTO {
 
-    private String title;
-    private String description;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private Double cost;
-    private Set<Employee> employees = new HashSet<>();
-    private Set<Task> tasks = new HashSet<>();
-
+    private Set<EmployeeBaseDTO> employees = new HashSet<>();
 }
