@@ -1,7 +1,6 @@
 package com.nisshoku.mgnt.services;
 
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
-import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeExtDTO;
 import com.nisshoku.mgnt.api.v1.mappers.EmployeeMapper;
 import com.nisshoku.mgnt.domain.Employee;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
@@ -64,7 +63,7 @@ public class EmployeeServiceImplTest {
         when(employeeRepository.findById(anyInt())).thenReturn(java.util.Optional.of(employee));
 
         // when
-        EmployeeExtDTO returnedEmployee = employeeService.getEmployeeById(ID);
+        EmployeeDTO returnedEmployee = employeeService.getEmployeeById(ID);
 
         // then
         assertEquals(FIRSTNAME, returnedEmployee.getFirstName());

@@ -1,5 +1,6 @@
 package com.nisshoku.mgnt.api.v1.domain.Project;
 
+import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeBaseDTO;
 import com.nisshoku.mgnt.domain.State;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,8 +17,5 @@ import java.util.Set;
 @AllArgsConstructor
 public class ProjectDTO extends ProjectBaseDTO{
 
-    private String description;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private Double cost;
+    Set<EmployeeBaseDTO> employees = new HashSet<>();
 }

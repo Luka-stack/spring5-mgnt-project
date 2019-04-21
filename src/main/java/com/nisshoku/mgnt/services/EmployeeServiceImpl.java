@@ -3,7 +3,6 @@ package com.nisshoku.mgnt.services;
 import com.nisshoku.mgnt.api.v1.domain.Project.ProjectBaseDTO;
 import com.nisshoku.mgnt.api.v1.domain.Project.ProjectDTO;
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
-import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeExtDTO;
 import com.nisshoku.mgnt.api.v1.mappers.EmployeeMapper;
 import com.nisshoku.mgnt.controllers.v1.ProjectController;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
@@ -41,16 +40,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeExtDTO getEmployeeById(Integer id) {
+    public EmployeeDTO getEmployeeById(Integer id) {
 
         return employeeRepository.findById(id)
                 .map(employee -> {
-                    EmployeeExtDTO employeeExtDTO = employeeMapper.employeeToEmployeeExtDTO(employee);
+                    EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
 
-                    for (ProjectDTO project : employeeExtDTO.getProjects())
+                    for (ProjectBaseDTO project : employeeDTO.getProjects())
                         project.setProjectUrl(getProjectUrl(project.getTitle()));
 
-                    return employeeExtDTO;
+                    return employeeDTO;
                 })
                 .orElseThrow(RuntimeException::new);
     }

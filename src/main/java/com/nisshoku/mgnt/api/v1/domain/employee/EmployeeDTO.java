@@ -15,6 +15,5 @@ import java.util.Set;
 @AllArgsConstructor
 public class EmployeeDTO extends EmployeeBaseDTO {
 
-    private String phoneNumber;
     Set<ProjectBaseDTO> projects = new HashSet<>();
 }

@@ -1,6 +1,6 @@
 package com.nisshoku.mgnt.controllers.v1;
 
-import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeExtDTO;
+import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeListDTO;
 import com.nisshoku.mgnt.services.EmployeeService;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class EmployeeController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public EmployeeExtDTO getEmployeeById(@PathVariable Integer id) {
+    public EmployeeDTO getEmployeeById(@PathVariable Integer id) {
         return employeeService.getEmployeeById(id);
     }
 }

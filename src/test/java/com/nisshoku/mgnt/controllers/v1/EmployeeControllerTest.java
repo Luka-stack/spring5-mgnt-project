@@ -1,7 +1,6 @@
 package com.nisshoku.mgnt.controllers.v1;
 
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
-import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeExtDTO;
 import com.nisshoku.mgnt.services.EmployeeService;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,7 +68,7 @@ public class EmployeeControllerTest {
     @Test
     public void getEmployeeById() throws Exception {
 
-        EmployeeExtDTO employeeDTO = new EmployeeExtDTO();
+        EmployeeDTO employeeDTO = new EmployeeDTO();
         employeeDTO.setFirstName(FIRSTNAME);
         employeeDTO.setLastName(LASTNAME);
 

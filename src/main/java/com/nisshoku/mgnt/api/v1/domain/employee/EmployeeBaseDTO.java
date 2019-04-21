@@ -14,5 +14,6 @@ public class EmployeeBaseDTO {
     private String lastName;
     private String email;
     private Language favoriteLanguage;
+    private String phoneNumber;
     private String employeeUrl;
 }
