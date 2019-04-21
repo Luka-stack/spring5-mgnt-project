@@ -20,5 +20,4 @@ public class ProjectDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private Double cost;
-    private Set<EmployeeDTO> employees = new HashSet<>();
 }
