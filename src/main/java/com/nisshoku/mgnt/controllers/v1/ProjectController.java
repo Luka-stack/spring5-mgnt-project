@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(ProjectController.URL_BASE)
 public class ProjectController {
 
-    static final String URL_BASE = "/api/v1/projects";
+    public static final String URL_BASE = "/api/v1/projects";
 
     private final ProjectService projectService;
 

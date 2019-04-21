@@ -26,6 +26,9 @@ public class Project extends BaseEntity {
     private String description;
 
     @NotNull
+    private State stateOfProject;
+
+    @NotNull
     private LocalDate startDate;
 
     private LocalDate endDate;

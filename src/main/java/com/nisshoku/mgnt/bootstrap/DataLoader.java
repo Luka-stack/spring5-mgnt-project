@@ -1,9 +1,6 @@
 package com.nisshoku.mgnt.bootstrap;
 
-import com.nisshoku.mgnt.domain.Employee;
-import com.nisshoku.mgnt.domain.Language;
-import com.nisshoku.mgnt.domain.Project;
-import com.nisshoku.mgnt.domain.Task;
+import com.nisshoku.mgnt.domain.*;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
 import com.nisshoku.mgnt.repositories.TaskRepository;
@@ -41,6 +38,7 @@ public class DataLoader implements CommandLineRunner {
         newProject.setDescription("Desc Of Project");
         newProject.setStartDate(LocalDate.now());
         newProject.setEndDate(LocalDate.now());
+        newProject.setStateOfProject(State.DONE);
         newProject.setCost(100.09);
 
         Project newProject2 = new Project();
@@ -48,11 +46,13 @@ public class DataLoader implements CommandLineRunner {
         newProject2.setDescription("Desc Of Project _ 2");
         newProject2.setStartDate(LocalDate.now());
         newProject2.setEndDate(LocalDate.now());
+        newProject2.setStateOfProject(State.IN_PROGRESS);
         newProject2.setCost(1000.09);
 
         Task newTask = new Task();
         newTask.setTitle("Title Task");
         newTask.setDescription("Desc For Task");
+        newTask.setStateOfTask(State.REJECTED);
 
         // Relationships
         // Project - Task
@@ -88,15 +88,18 @@ public class DataLoader implements CommandLineRunner {
         newProject3.setDescription("New Super Project");
         newProject3.setStartDate(LocalDate.now());
         newProject3.setEndDate(LocalDate.now());
+        newProject3.setStateOfProject(State.IN_PROGRESS);
         newProject3.setCost(909.09);
 
         Task newTask2 = new Task();
         newTask2.setTitle("Easy Task");
         newTask2.setDescription("Very Easy Task");
+        newTask2.setStateOfTask(State.BUG);
 
         Task newTask3 = new Task();
         newTask3.setTitle("Hard Task");
         newTask3.setDescription("Rather Hard Task");
+        newTask3.setStateOfTask(State.ACCEPTED);
 
         // Relationships
         // Project - Task

@@ -1,6 +1,5 @@
 package com.nisshoku.mgnt.controllers.v1;
 
-import com.nisshoku.mgnt.api.v1.domain.EmployeeBaseDTO;
 import com.nisshoku.mgnt.api.v1.domain.EmployeeDTO;
 import com.nisshoku.mgnt.services.EmployeeService;
 import org.junit.Before;
