@@ -1,7 +1,9 @@
 package com.nisshoku.mgnt.services;
 
-import com.nisshoku.mgnt.api.v1.domain.EmployeeDTO;
-import com.nisshoku.mgnt.api.v1.domain.ProjectSharedDTO;
+import com.nisshoku.mgnt.api.v1.domain.Project.ProjectBaseDTO;
+import com.nisshoku.mgnt.api.v1.domain.Project.ProjectDTO;
+import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
+import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeExtDTO;
 import com.nisshoku.mgnt.api.v1.mappers.EmployeeMapper;
 import com.nisshoku.mgnt.controllers.v1.ProjectController;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
@@ -30,12 +32,27 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .map(employee -> {
                     EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
 
-                    for (ProjectSharedDTO project : employeeDTO.getProjects())
+                    for (ProjectBaseDTO project : employeeDTO.getProjects())
                         project.setProjectUrl(getProjectUrl(project.getTitle()));
 
                     return employeeDTO;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public EmployeeExtDTO getEmployeeById(Integer id) {
+
+        return employeeRepository.findById(id)
+                .map(employee -> {
+                    EmployeeExtDTO employeeExtDTO = employeeMapper.employeeToEmployeeExtDTO(employee);
+
+                    for (ProjectDTO project : employeeExtDTO.getProjects())
+                        project.setProjectUrl(getProjectUrl(project.getTitle()));
+
+                    return employeeExtDTO;
+                })
+                .orElseThrow(RuntimeException::new);
     }
 
     private String getProjectUrl(String title) {

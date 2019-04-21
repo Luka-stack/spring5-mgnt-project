@@ -1,6 +1,7 @@
 package com.nisshoku.mgnt.controllers.v1;
 
-import com.nisshoku.mgnt.api.v1.domain.EmployeeDTO;
+import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
+import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeExtDTO;
 import com.nisshoku.mgnt.services.EmployeeService;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +15,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -61,5 +64,22 @@ public class EmployeeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.employees", hasSize(2)));
 
+    }
+
+    @Test
+    public void getEmployeeById() throws Exception {
+
+        EmployeeExtDTO employeeDTO = new EmployeeExtDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
+
+        when(employeeService.getEmployeeById(anyInt())).thenReturn(employeeDTO);
+
+        mockMvc.perform(get(EmployeeController.BASE_URL + "/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", equalTo(FIRSTNAME)))
+                .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)));
     }
 }

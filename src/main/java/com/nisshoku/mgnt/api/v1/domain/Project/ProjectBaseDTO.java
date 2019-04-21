@@ -1,4 +1,4 @@
-package com.nisshoku.mgnt.api.v1.domain;
+package com.nisshoku.mgnt.api.v1.domain.Project;
 
 import com.nisshoku.mgnt.domain.State;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectSharedDTO {
+public class ProjectBaseDTO {
 
     private String title;
     private State stateOfProject;

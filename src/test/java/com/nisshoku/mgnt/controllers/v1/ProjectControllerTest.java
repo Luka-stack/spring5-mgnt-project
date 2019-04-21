@@ -1,6 +1,6 @@
 package com.nisshoku.mgnt.controllers.v1;
 
-import com.nisshoku.mgnt.api.v1.domain.ProjectDTO;
+import com.nisshoku.mgnt.api.v1.domain.Project.ProjectDTO;
 import com.nisshoku.mgnt.services.ProjectService;
 import org.junit.Before;
 import org.junit.Test;

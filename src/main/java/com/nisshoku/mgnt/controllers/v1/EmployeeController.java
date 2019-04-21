@@ -1,12 +1,10 @@
 package com.nisshoku.mgnt.controllers.v1;
 
-import com.nisshoku.mgnt.api.v1.domain.EmployeeListDTO;
+import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeExtDTO;
+import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeListDTO;
 import com.nisshoku.mgnt.services.EmployeeService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(EmployeeController.BASE_URL)
@@ -24,5 +22,11 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.OK)
     public EmployeeListDTO getAllEmployees() {
         return new EmployeeListDTO(employeeService.getAllEmployees());
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public EmployeeExtDTO getEmployeeById(@PathVariable Integer id) {
+        return employeeService.getEmployeeById(id);
     }
 }
