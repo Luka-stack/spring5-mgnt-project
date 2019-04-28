@@ -1,6 +1,7 @@
 package com.nisshoku.mgnt.controllers.v1;
 
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
+import com.nisshoku.mgnt.domain.Language;
 import com.nisshoku.mgnt.services.EmployeeService;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +17,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -63,6 +64,50 @@ public class EmployeeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.employees", hasSize(2)));
 
+    }
+
+    @Test
+    public void getEmployeesByLanguage() throws Exception {
+
+        EmployeeDTO employeeDTO1 = new EmployeeDTO();
+        employeeDTO1.setFavoriteLanguage(Language.GO);
+
+        EmployeeDTO employeeDTO2 = new EmployeeDTO();
+        employeeDTO2.setFavoriteLanguage(Language.GO);
+
+        List<EmployeeDTO> employeeDTOList = Arrays.asList(employeeDTO1, employeeDTO2);
+
+        when(employeeService.getEmployeesByLanguage(any())).thenReturn(employeeDTOList);
+
+        mockMvc.perform(get(EmployeeController.BASE_URL + "/lang/" + Language.GO)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.employees", hasSize(2)))
+                .andExpect(jsonPath("$.employees[0].favoriteLanguage", equalTo("GO")))
+                .andExpect(jsonPath("$.employees[1].favoriteLanguage", equalTo("GO")));
+    }
+
+    @Test
+    public void getEmployeesByLastName() throws Exception {
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setLastName(LASTNAME);
+
+        EmployeeDTO employeeDTO1 = new EmployeeDTO();
+        employeeDTO1.setLastName(LASTNAME);
+
+        List<EmployeeDTO> employeeDTOList = Arrays.asList(employeeDTO, employeeDTO1);
+
+        when(employeeService.getEmployeesByLastName(anyString())).thenReturn(employeeDTOList);
+
+        mockMvc.perform(get(EmployeeController.BASE_URL + "/lastname/" + LASTNAME)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.employees", hasSize(2)))
+                .andExpect(jsonPath("$.employees[0].lastName", equalTo(LASTNAME)))
+                .andExpect(jsonPath("$.employees[1].lastName", equalTo(LASTNAME)));
     }
 
     @Test

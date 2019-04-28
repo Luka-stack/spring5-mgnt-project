@@ -3,6 +3,7 @@ package com.nisshoku.mgnt.services;
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
 import com.nisshoku.mgnt.api.v1.mappers.EmployeeMapper;
 import com.nisshoku.mgnt.domain.Employee;
+import com.nisshoku.mgnt.domain.Language;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,8 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 public class EmployeeServiceImplTest {
@@ -68,5 +68,55 @@ public class EmployeeServiceImplTest {
         // then
         assertEquals(FIRSTNAME, returnedEmployee.getFirstName());
         assertEquals(LASTNAME, returnedEmployee.getLastName());
+    }
+
+    @Test
+    public void getEmployeesByLanguage() {
+
+        // given
+        Employee employee = new Employee();
+        employee.setId(ID);
+        employee.setFavoriteLanguage(Language.GO);
+
+        Employee employee2 = new Employee();
+        employee2.setId(ID + 1);
+        employee2.setFavoriteLanguage(Language.GO);
+
+        List<Employee> employees = Arrays.asList(employee, employee2);
+
+        when(employeeRepository.findByFavoriteLanguage(any())).thenReturn(employees);
+
+        // when
+        List<EmployeeDTO> returnedEmpoyee = employeeService.getEmployeesByLanguage(Language.GO);
+
+        //then
+        assertEquals(2, returnedEmpoyee.size());
+        assertEquals(Language.GO, returnedEmpoyee.get(0).getFavoriteLanguage());
+        assertEquals(Language.GO, returnedEmpoyee.get(1).getFavoriteLanguage());
+    }
+
+    @Test
+    public void getEmployeesByLastNaem() {
+
+        // given
+        Employee employee = new Employee();
+        employee.setId(ID);
+        employee.setLastName(LASTNAME);
+
+        Employee employee1 = new Employee();
+        employee1.setId(ID);
+        employee1.setLastName(LASTNAME);
+
+        List<Employee> employees = Arrays.asList(employee, employee1);
+
+        when(employeeRepository.findByLastName(anyString())).thenReturn(employees);
+
+        // when
+        List<EmployeeDTO> employeeDTOList = employeeService.getEmployeesByLastName(LASTNAME);
+
+        // then
+        assertEquals(2, employeeDTOList.size());
+        assertEquals(LASTNAME, employeeDTOList.get(0).getLastName());
+        assertEquals(LASTNAME, employeeDTOList.get(1).getLastName());
     }
 }

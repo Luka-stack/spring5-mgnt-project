@@ -11,8 +11,8 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class EmployeeDTO extends EmployeeBaseDTO {
 
     Set<ProjectBaseDTO> projects = new HashSet<>();
