@@ -55,7 +55,7 @@ public class DataLoader implements CommandLineRunner {
         Task newTask = new Task();
         newTask.setTitle("Title Task");
         newTask.setDescription("Desc For Task");
-        newTask.setStateOfTask(State.REJECTED);
+        newTask.setStateOfTask(State.DONE);
 
         // Relationships
         // project - Task
