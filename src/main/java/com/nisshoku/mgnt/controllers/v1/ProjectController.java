@@ -1,7 +1,7 @@
 package com.nisshoku.mgnt.controllers.v1;
 
-import com.nisshoku.mgnt.api.v1.domain.Project.ProjectDTO;
-import com.nisshoku.mgnt.api.v1.domain.Project.ProjectListDTO;
+import com.nisshoku.mgnt.api.v1.domain.project.ProjectDTO;
+import com.nisshoku.mgnt.api.v1.domain.project.ProjectListDTO;
 import com.nisshoku.mgnt.domain.State;
 import com.nisshoku.mgnt.services.ProjectService;
 import org.springframework.http.HttpStatus;

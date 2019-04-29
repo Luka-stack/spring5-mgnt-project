@@ -1,13 +1,12 @@
-package com.nisshoku.mgnt.api.v1.domain.Project;
+package com.nisshoku.mgnt.api.v1.domain.project;
 
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeBaseDTO;
-import com.nisshoku.mgnt.domain.State;
+import com.nisshoku.mgnt.api.v1.domain.task.TaskBaseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,4 +17,5 @@ import java.util.Set;
 public class ProjectDTO extends ProjectBaseDTO{
 
     Set<EmployeeBaseDTO> employees = new HashSet<>();
+    Set<TaskBaseDTO> tasks = new HashSet<>();
 }

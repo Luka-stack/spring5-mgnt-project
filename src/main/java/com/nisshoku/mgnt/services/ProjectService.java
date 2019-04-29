@@ -1,6 +1,6 @@
 package com.nisshoku.mgnt.services;
 
-import com.nisshoku.mgnt.api.v1.domain.Project.ProjectDTO;
+import com.nisshoku.mgnt.api.v1.domain.project.ProjectDTO;
 import com.nisshoku.mgnt.domain.State;
 
 import java.util.List;

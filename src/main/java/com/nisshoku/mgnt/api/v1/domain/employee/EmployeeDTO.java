@@ -1,6 +1,6 @@
 package com.nisshoku.mgnt.api.v1.domain.employee;
 
-import com.nisshoku.mgnt.api.v1.domain.Project.ProjectBaseDTO;
+import com.nisshoku.mgnt.api.v1.domain.project.ProjectBaseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

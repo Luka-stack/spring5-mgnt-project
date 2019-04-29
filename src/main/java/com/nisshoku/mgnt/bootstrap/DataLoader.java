@@ -37,20 +37,18 @@ public class DataLoader implements CommandLineRunner {
         newEmployee.setPhoneNumber("123456789");
 
         Project newProject = new Project();
-        newProject.setTitle("Project");
-        newProject.setDescription("Desc Of Project");
+        newProject.setTitle("project");
+        newProject.setDescription("Desc Of project");
         newProject.setStartDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-01-01"));
         newProject.setEndDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-02-01"));
         newProject.setStateOfProject(State.DONE);
         newProject.setCost(100.09);
 
         Project newProject2 = new Project();
-        newProject2.setTitle("Project _ 2");
-        newProject2.setDescription("Desc Of Project _ 2");
+        newProject2.setTitle("project _ 2");
+        newProject2.setDescription("Desc Of project _ 2");
         newProject2.setStartDate(new SimpleDateFormat("yyyy-MM-dd").parse("2019-03-10"));
         newProject2.setEndDate(new SimpleDateFormat("yyyy-MM-dd").parse("2019-04-25"));
-        //newProject2.setStartDate(LocalDate.now());
-        //newProject2.setEndDate(LocalDate.now());
         newProject2.setStateOfProject(State.IN_PROGRESS);
         newProject2.setCost(1000.09);
 
@@ -60,10 +58,10 @@ public class DataLoader implements CommandLineRunner {
         newTask.setStateOfTask(State.REJECTED);
 
         // Relationships
-        // Project - Task
-        //newTask.setProject(newProject);
-        //newProject.getTasks().add(newTask);
-        // Employee - Project
+        // project - Task
+        newTask.setProject(newProject);
+        newProject.getTasks().add(newTask);
+        // Employee - project
         newEmployee.getProjects().add(newProject);
         newEmployee.getProjects().add(newProject2);
         newProject.getEmployees().add(newEmployee);
@@ -89,13 +87,10 @@ public class DataLoader implements CommandLineRunner {
         newEmployee3.setPhoneNumber("135798642");
 
         Project newProject3 = new Project();
-        newProject3.setTitle("Super Project");
-        newProject3.setDescription("New Super Project");
+        newProject3.setTitle("Super project");
+        newProject3.setDescription("New Super project");
         newProject3.setStartDate(new SimpleDateFormat("yyyy-MM-dd").parse("2019-04-10"));
-        //newProject3.setEndDate(new SimpleDateFormat("yyyy-MM-dd").parse("2019-04-29"));
         newProject3.setEndDate(new SimpleDateFormat("yyyy").parse("2019"));
-        //newProject3.setStartDate(LocalDate.now());
-        //newProject3.setEndDate(LocalDate.now());
         newProject3.setStateOfProject(State.IN_PROGRESS);
         newProject3.setCost(909.09);
 
@@ -110,12 +105,12 @@ public class DataLoader implements CommandLineRunner {
         newTask3.setStateOfTask(State.ACCEPTED);
 
         // Relationships
-        // Project - Task
-        //newTask2.setProject(newProject2);
-        //newTask3.setProject(newProject2);
-        //newProject2.getTasks().add(newTask2);
-        //newProject2.getTasks().add(newTask3);
-        // Employee - Project
+        // project - Task
+        newTask2.setProject(newProject2);
+        newTask3.setProject(newProject2);
+        newProject2.getTasks().add(newTask2);
+        newProject2.getTasks().add(newTask3);
+        // Employee - project
         newEmployee2.getProjects().add(newProject3);
         newEmployee3.getProjects().add(newProject3);
         newProject3.getEmployees().add(newEmployee2);

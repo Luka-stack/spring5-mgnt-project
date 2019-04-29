@@ -1,12 +1,9 @@
 package com.nisshoku.mgnt.repositories;
 
-import com.nisshoku.mgnt.api.v1.domain.Project.ProjectDTO;
 import com.nisshoku.mgnt.domain.Project;
 import com.nisshoku.mgnt.domain.State;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.nisshoku.mgnt.api.v1.domain.Project;
+package com.nisshoku.mgnt.api.v1.domain.project;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

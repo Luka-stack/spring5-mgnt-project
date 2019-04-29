@@ -31,6 +31,6 @@ public class Task extends BaseEntity {
     @NotNull
     private State stateOfTask;
 
- /*   @ManyToOne
-    private Project project;*/
+    @ManyToOne
+    private Project project;
 }
