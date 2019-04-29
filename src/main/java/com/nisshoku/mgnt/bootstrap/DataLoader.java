@@ -7,7 +7,10 @@ import com.nisshoku.mgnt.repositories.TaskRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.Date;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -36,16 +39,18 @@ public class DataLoader implements CommandLineRunner {
         Project newProject = new Project();
         newProject.setTitle("Project");
         newProject.setDescription("Desc Of Project");
-        newProject.setStartDate(LocalDate.now());
-        newProject.setEndDate(LocalDate.now());
+        newProject.setStartDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-01-01"));
+        newProject.setEndDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-02-01"));
         newProject.setStateOfProject(State.DONE);
         newProject.setCost(100.09);
 
         Project newProject2 = new Project();
         newProject2.setTitle("Project _ 2");
         newProject2.setDescription("Desc Of Project _ 2");
-        newProject2.setStartDate(LocalDate.now());
-        newProject2.setEndDate(LocalDate.now());
+        newProject2.setStartDate(new SimpleDateFormat("yyyy-MM-dd").parse("2019-03-10"));
+        newProject2.setEndDate(new SimpleDateFormat("yyyy-MM-dd").parse("2019-04-25"));
+        //newProject2.setStartDate(LocalDate.now());
+        //newProject2.setEndDate(LocalDate.now());
         newProject2.setStateOfProject(State.IN_PROGRESS);
         newProject2.setCost(1000.09);
 
@@ -86,8 +91,11 @@ public class DataLoader implements CommandLineRunner {
         Project newProject3 = new Project();
         newProject3.setTitle("Super Project");
         newProject3.setDescription("New Super Project");
-        newProject3.setStartDate(LocalDate.now());
-        newProject3.setEndDate(LocalDate.now());
+        newProject3.setStartDate(new SimpleDateFormat("yyyy-MM-dd").parse("2019-04-10"));
+        //newProject3.setEndDate(new SimpleDateFormat("yyyy-MM-dd").parse("2019-04-29"));
+        newProject3.setEndDate(new SimpleDateFormat("yyyy").parse("2019"));
+        //newProject3.setStartDate(LocalDate.now());
+        //newProject3.setEndDate(LocalDate.now());
         newProject3.setStateOfProject(State.IN_PROGRESS);
         newProject3.setCost(909.09);
 

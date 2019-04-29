@@ -7,7 +7,10 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,9 +32,11 @@ public class Project extends BaseEntity {
     private State stateOfProject;
 
     @NotNull
-    private LocalDate startDate;
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
 
-    private LocalDate endDate;
+    @Temporal(TemporalType.DATE)
+    private Date endDate;
     private Double cost;
 
     @ManyToMany

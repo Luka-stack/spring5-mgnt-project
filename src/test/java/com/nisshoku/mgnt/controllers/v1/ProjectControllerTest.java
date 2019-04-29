@@ -1,6 +1,7 @@
 package com.nisshoku.mgnt.controllers.v1;
 
 import com.nisshoku.mgnt.api.v1.domain.Project.ProjectDTO;
+import com.nisshoku.mgnt.domain.State;
 import com.nisshoku.mgnt.services.ProjectService;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,10 +12,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -60,5 +66,78 @@ public class ProjectControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projects", hasSize(2)));
+    }
+
+    @Test
+    public void getProjectById() throws Exception {
+
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setTitle(TITLE);
+
+        when(projectService.getProjectById(anyInt())).thenReturn(projectDTO);
+
+        mockMvc.perform(get(ProjectController.URL_BASE + "/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title", equalTo(TITLE)));
+    }
+
+    @Test
+    public void getProjectsByState() throws Exception {
+
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setStateOfProject(State.DONE);
+
+        ProjectDTO projectDTO2 = new ProjectDTO();
+        projectDTO2.setStateOfProject(State.DONE);
+
+        List<ProjectDTO> projectDTOList = Arrays.asList(projectDTO, projectDTO2);
+
+        when(projectService.getProjectsByState(any())).thenReturn(projectDTOList);
+
+        mockMvc.perform(get(ProjectController.URL_BASE + "/state/" + State.DONE)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.projects", hasSize(2)))
+                .andExpect(jsonPath("$.projects[0].stateOfProject", equalTo("DONE")))
+                .andExpect(jsonPath("$.projects[1].stateOfProject", equalTo("DONE")));
+    }
+
+    @Test
+    public void getProjectsByYear() throws Exception {
+
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setStartDate(new SimpleDateFormat("yyy-MM-dd").parse("2019-01-01"));
+
+        ProjectDTO projectDTO2 = new ProjectDTO();
+        projectDTO2.setStartDate(new SimpleDateFormat("yyy-MM-dd").parse("2019-05-05"));
+
+        List<ProjectDTO> projectDTOList =  Arrays.asList(projectDTO, projectDTO2);
+
+        when(projectService.getProjectsByYear("2019")).thenReturn(projectDTOList);
+
+        mockMvc.perform(get(ProjectController.URL_BASE + "/year/2019")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.projects", hasSize(2)));
+    }
+
+    @Test
+    public void getProjectByTitle() throws Exception {
+
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setTitle(TITLE);
+
+        when(projectService.getProjectByTitle(anyString())).thenReturn(projectDTO);
+
+        mockMvc.perform(get(ProjectController.URL_BASE + "/title/" + TITLE)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title", equalTo(TITLE)));
+
     }
 }
