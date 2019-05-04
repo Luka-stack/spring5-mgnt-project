@@ -1,6 +1,8 @@
 package com.nisshoku.mgnt.controllers.v1;
 
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
+import com.nisshoku.mgnt.api.v1.domain.project.ProjectBaseDTO;
+import com.nisshoku.mgnt.domain.Employee;
 import com.nisshoku.mgnt.domain.Language;
 import com.nisshoku.mgnt.services.EmployeeService;
 import org.junit.Before;
@@ -14,12 +16,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
+import static com.nisshoku.mgnt.controllers.AbstractRestControllerTest.asJsonString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -125,5 +130,34 @@ public class EmployeeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName", equalTo(FIRSTNAME)))
                 .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)));
+    }
+
+    @Test
+    public void creatNewEmployee() throws Exception {
+
+        ProjectBaseDTO project = new ProjectBaseDTO();
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
+        employeeDTO.getProjects().add(project);
+
+        EmployeeDTO returnedDTO = new EmployeeDTO();
+        returnedDTO.setFirstName(FIRSTNAME);
+        returnedDTO.setLastName(LASTNAME);
+        returnedDTO.getProjects().add(project);
+        returnedDTO.setEmployeeUrl(EmployeeController.BASE_URL + "/1");
+
+        when(employeeService.createNewEmployee(any())).thenReturn(returnedDTO);
+
+        mockMvc.perform(post(EmployeeController.BASE_URL)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(employeeDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.firstName", equalTo(FIRSTNAME)))
+                .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)))
+                .andExpect(jsonPath("$.projects", hasSize(1)))
+                .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
     }
 }

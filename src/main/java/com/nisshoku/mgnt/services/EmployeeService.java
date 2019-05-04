@@ -14,4 +14,10 @@ public interface EmployeeService {
     List<EmployeeDTO> getEmployeesByLanguage(Language language);
 
     List<EmployeeDTO> getEmployeesByLastName(String lastName);
+
+    EmployeeDTO saveEmployee(Integer id, EmployeeDTO employeeDTO);
+
+    EmployeeDTO createNewEmployee(EmployeeDTO employeeDTO);
+
+    EmployeeDTO createNewEmployeeWithExistingProject(Integer id, EmployeeDTO employeeDTO);
 }

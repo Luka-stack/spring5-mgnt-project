@@ -21,6 +21,7 @@ public class Project extends BaseEntity {
 
     @NotBlank
     @Size(min=5, max = 30)
+    @Column(unique=true)
     private String title;
 
     @Lob

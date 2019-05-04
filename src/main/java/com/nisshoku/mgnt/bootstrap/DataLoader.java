@@ -122,4 +122,5 @@ public class DataLoader implements CommandLineRunner {
         taskRepository.save(newTask2);
         taskRepository.save(newTask3);
     }
+
 }

@@ -42,4 +42,17 @@ public class EmployeeController {
     public EmployeeListDTO getEmployeesByLastName(@PathVariable String lastName) {
         return new EmployeeListDTO(employeeService.getEmployeesByLastName(lastName));
     }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public EmployeeDTO createNewEmployee(@RequestBody EmployeeDTO employeeDTO) {
+        return employeeService.createNewEmployee(employeeDTO);
+    }
+
+    @PostMapping("/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public EmployeeDTO createNewEmployeeWithExistingProject(@RequestBody EmployeeDTO employeeDTO,
+                                                            @PathVariable Integer id) {
+        return employeeService.createNewEmployeeWithExistingProject(id, employeeDTO);
+    }
 }
