@@ -96,30 +96,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDTO saveEmployee(Integer id, EmployeeDTO employeeDTO) {
-
-        Employee employee = employeeMapper.employeeDTOToEmployee(employeeDTO);
-        employee.setId(id);
-
-        return saveAndReturnDTO(employee);
-    }
-
-    @Override
     public EmployeeDTO createNewEmployee(EmployeeDTO employeeDTO) {
 
-        Employee employee = employeeMapper.employeeDTOToEmployee(employeeDTO);
-        EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(employeeRepository.save(employee));
-        returnedDTO.setEmployeeUrl(getEmployeeUrl(employee.getId()));
-
-        if (employee.getProjects() != null && employee.getProjects().size() > 0) {
-            employee.getProjects().forEach(project -> {
-                employee.setProjects(null);
-                project.getEmployees().add(employee);
-                projectRepository.save(project);
-            });
-        }
-
-        return returnedDTO;
+        return saveAndReturnDTO(employeeMapper.employeeDTOToEmployee(employeeDTO));
     }
 
     @Override
@@ -133,16 +112,42 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.getProjects().add(project);
         }
 
-        return employeeMapper.employeeToEmployeeDTO(employeeRepository.save(employee));
+        //return employeeMapper.employeeToEmployeeDTO(employeeRepository.save(employee));
+        return saveAndReturnDTO(employee);
+    }
+
+    @Override
+    public EmployeeDTO updateEmployeeFullBody(Integer id, EmployeeDTO employeeDTO) {
+
+        Employee employee = employeeMapper.employeeDTOToEmployee(employeeDTO);
+        employee.setId(id);
+
+        return saveAndReturnDTO(employee);
+    }
+
+    @Override
+    public void deleteEmployeeById(Integer id) {
+
+        employeeRepository.deleteById(id);
     }
 
     private EmployeeDTO saveAndReturnDTO(Employee employee) {
 
         Employee savedEmployee = employeeRepository.save(employee);
-        EmployeeDTO savedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
-        savedDTO.setEmployeeUrl(getEmployeeUrl(savedEmployee.getId()));
+        EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
 
-        return savedDTO;
+        returnedDTO.setEmployeeUrl(getEmployeeUrl(savedEmployee.getId()));
+        returnedDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
+
+        if (employee.getProjects() != null && employee.getProjects().size() > 0) {
+            employee.getProjects().forEach(project -> {
+                employee.setProjects(null);
+                project.getEmployees().add(employee);
+                projectRepository.save(project);
+            });
+        }
+
+        return returnedDTO;
     }
 
     private String getProjectUrl(String title) {

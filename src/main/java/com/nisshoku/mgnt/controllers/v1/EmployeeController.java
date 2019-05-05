@@ -55,4 +55,16 @@ public class EmployeeController {
                                                             @PathVariable Integer id) {
         return employeeService.createNewEmployeeWithExistingProject(id, employeeDTO);
     }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public EmployeeDTO updateEmployee(@RequestBody EmployeeDTO employeeDTO, @PathVariable Integer id) {
+        return employeeService.updateEmployeeFullBody(id, employeeDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteEmployeeById(@PathVariable Integer id) {
+        employeeService.deleteEmployeeById(id);
+    }
 }

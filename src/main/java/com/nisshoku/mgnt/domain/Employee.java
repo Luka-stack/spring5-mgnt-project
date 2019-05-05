@@ -24,4 +24,11 @@ public class Employee extends Person {
 
     @ManyToMany(mappedBy = "employees")
     private Set<Project> projects = new HashSet<>();
+
+    @PreRemove
+    private void removeGroupsFromUsers() {
+        for (Project u : projects) {
+            u.getEmployees().remove(this);
+        }
+    }
 }

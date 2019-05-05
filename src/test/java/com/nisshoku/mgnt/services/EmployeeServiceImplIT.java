@@ -1,7 +1,6 @@
 package com.nisshoku.mgnt.services;
 
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
-import com.nisshoku.mgnt.api.v1.domain.project.ProjectBaseDTO;
 import com.nisshoku.mgnt.api.v1.mappers.EmployeeMapper;
 import com.nisshoku.mgnt.bootstrap.DataLoader;
 import com.nisshoku.mgnt.domain.Employee;
@@ -17,8 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -56,7 +56,7 @@ public class EmployeeServiceImplIT {
         employeeDTO.setEmail(EMAIL);
         employeeDTO.setFavoriteLanguage(Language.GO);
 
-        Integer projectID = 1;
+        Integer projectID = getEmployeeIdValue();
         Project projectDB = projectRepository.getOne(projectID);
         assertNotNull(projectDB);
 
@@ -65,5 +65,45 @@ public class EmployeeServiceImplIT {
         assertEquals(savedEmployee.getFirstName(), FIRSTNAME);
         assertEquals(savedEmployee.getLastName(), LASTNAME);
         assertEquals(1, savedEmployee.getProjects().size());
+    }
+
+    @Test
+    public void updateEmployeeFullBody() {
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
+        employeeDTO.setEmail(EMAIL);
+        employeeDTO.setFavoriteLanguage(Language.GO);
+
+        Integer getUpdateId = getEmployeeIdValue();
+        Employee employeeDB = employeeRepository.getOne(getUpdateId);
+        assertNotNull(employeeDB);
+
+        EmployeeDTO savedEmployee = employeeService.updateEmployeeFullBody(getUpdateId, employeeDTO);
+
+        assertNotNull(savedEmployee.getFirstName(), employeeDB.getFirstName());
+        assertNotNull(savedEmployee.getLastName(), employeeDB.getLastName());
+    }
+
+    @Test
+    public void deleteEmployeeById() {
+
+        List<Employee> employeesBeforeDelete = employeeRepository.findAll();
+        Integer id = employeesBeforeDelete.get(0).getId();
+
+        employeeService.deleteEmployeeById(id);
+
+        List<Employee> employeesAfterDelete = employeeRepository.findAll();
+
+
+        assertEquals(employeesAfterDelete.size(), employeesBeforeDelete.size()-1);
+    }
+
+    private Integer getEmployeeIdValue() {
+
+        List<Employee> employees = employeeRepository.findAll();
+
+        return employees.get(0).getId();
     }
 }
