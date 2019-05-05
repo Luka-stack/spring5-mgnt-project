@@ -126,6 +126,38 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public EmployeeDTO patchEmployee(Integer id, EmployeeDTO employeeDTO) {
+
+        return employeeRepository.findById(id).map(employee -> {
+
+            if (employeeDTO.getFirstName() != null) {
+                employee.setFirstName(employeeDTO.getFirstName());
+            }
+
+            if (employeeDTO.getLastName() != null) {
+                employee.setLastName(employeeDTO.getLastName());
+            }
+
+            if (employeeDTO.getEmail() != null) {
+                employee.setEmail(employeeDTO.getEmail());
+            }
+
+            if (employeeDTO.getFavoriteLanguage() != null) {
+                employee.setFavoriteLanguage(employeeDTO.getFavoriteLanguage());
+            }
+
+            if (employeeDTO.getPhoneNumber() != null) {
+                employee.setPhoneNumber(employeeDTO.getPhoneNumber());
+            }
+
+            EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(employee);
+            returnedDTO.setEmployeeUrl(getEmployeeUrl(id));
+
+            return returnedDTO;
+        }).orElseThrow(RuntimeException::new);
+    }
+
+    @Override
     public void deleteEmployeeById(Integer id) {
 
         employeeRepository.deleteById(id);
