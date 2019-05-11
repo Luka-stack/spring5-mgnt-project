@@ -1,11 +1,13 @@
 package com.nisshoku.mgnt.services;
 
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
+import com.nisshoku.mgnt.api.v1.domain.project.ProjectBaseDTO;
 import com.nisshoku.mgnt.api.v1.mappers.EmployeeMapper;
 import com.nisshoku.mgnt.bootstrap.DataLoader;
 import com.nisshoku.mgnt.domain.Employee;
 import com.nisshoku.mgnt.domain.Language;
 import com.nisshoku.mgnt.domain.Project;
+import com.nisshoku.mgnt.domain.State;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
 import com.nisshoku.mgnt.repositories.TaskRepository;
@@ -68,7 +70,7 @@ public class EmployeeServiceImplIT {
     }
 
     @Test
-    public void updateEmployeeFullBody() {
+    public void updateEmployee() {
 
         EmployeeDTO employeeDTO = new EmployeeDTO();
         employeeDTO.setFirstName(FIRSTNAME);
@@ -80,10 +82,34 @@ public class EmployeeServiceImplIT {
         Employee employeeDB = employeeRepository.getOne(getUpdateId);
         assertNotNull(employeeDB);
 
-        EmployeeDTO savedEmployee = employeeService.updateEmployeeFullBody(getUpdateId, employeeDTO);
+        String orginalFirst = employeeDB.getFirstName();
+        String orginalEmail = employeeDB.getEmail();
 
-        assertNotNull(savedEmployee.getFirstName(), employeeDB.getFirstName());
-        assertNotNull(savedEmployee.getLastName(), employeeDB.getLastName());
+        employeeService.updateEmployee(getUpdateId, employeeDTO);
+
+        assertNotEquals(orginalFirst, employeeDB.getFirstName());
+        assertNotEquals(orginalEmail, employeeDB.getEmail());
+        assertEquals(FIRSTNAME, employeeDB.getFirstName());
+        assertEquals(EMAIL, employeeDB.getEmail());
+    }
+
+    @Test
+    public void patchEmployee() {
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+
+        Integer getPatchId = getEmployeeIdValue();
+        Employee employeeDB = employeeRepository.getOne(getPatchId);
+        assertNotNull(employeeDB);
+
+        String orginalName = employeeDB.getFirstName();
+
+        employeeService.patchEmployee(getPatchId, employeeDTO);
+
+        assertNotEquals(orginalName, employeeDB.getFirstName());
+        assertEquals(FIRSTNAME, employeeDB.getFirstName());
+        assertNotEquals(0, employeeDB.getProjects().size());
     }
 
     @Test

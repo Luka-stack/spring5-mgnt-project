@@ -98,7 +98,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeDTO createNewEmployee(EmployeeDTO employeeDTO) {
 
-        return saveAndReturnDTO(employeeMapper.employeeDTOToEmployee(employeeDTO));
+        Employee savedEmployee = employeeRepository.save(employeeMapper.employeeDTOToEmployee(employeeDTO));
+        EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
+
+        returnedDTO.setEmployeeUrl(getEmployeeUrl(savedEmployee.getId()));
+
+        return returnedDTO;
     }
 
     @Override
@@ -112,17 +117,36 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.getProjects().add(project);
         }
 
-        //return employeeMapper.employeeToEmployeeDTO(employeeRepository.save(employee));
-        return saveAndReturnDTO(employee);
+        Employee savedEmployee = employeeRepository.save(employee);
+        EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
+
+        returnedDTO.setEmployeeUrl(getEmployeeUrl(savedEmployee.getId()));
+        returnedDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
+
+        if (employee.getProjects() != null && employee.getProjects().size() > 0) {
+            employee.getProjects().forEach(project -> {
+                employee.setProjects(null);
+                project.getEmployees().add(employee);
+                projectRepository.save(project);
+            });
+        }
+
+        return returnedDTO;
     }
 
     @Override
-    public EmployeeDTO updateEmployeeFullBody(Integer id, EmployeeDTO employeeDTO) {
+    public EmployeeDTO updateEmployee(Integer id, EmployeeDTO employeeDTO) {
 
         Employee employee = employeeMapper.employeeDTOToEmployee(employeeDTO);
         employee.setId(id);
 
-        return saveAndReturnDTO(employee);
+        Employee savedEmployee = employeeRepository.save(employee);
+        EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
+
+        returnedDTO.setEmployeeUrl(getEmployeeUrl(savedEmployee.getId()));
+        returnedDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
+
+        return returnedDTO;
     }
 
     @Override
@@ -150,8 +174,11 @@ public class EmployeeServiceImpl implements EmployeeService {
                 employee.setPhoneNumber(employeeDTO.getPhoneNumber());
             }
 
+            employeeRepository.save(employee);
+
             EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(employee);
             returnedDTO.setEmployeeUrl(getEmployeeUrl(id));
+            returnedDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
 
             return returnedDTO;
         }).orElseThrow(RuntimeException::new);
@@ -163,7 +190,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.deleteById(id);
     }
 
-    private EmployeeDTO saveAndReturnDTO(Employee employee) {
+/*    private EmployeeDTO saveAndReturnDTO(Employee employee) {
 
         Employee savedEmployee = employeeRepository.save(employee);
         EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
@@ -180,7 +207,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         return returnedDTO;
-    }
+    }*/
 
     private String getProjectUrl(String title) {
         return ProjectController.URL_BASE + "/" + title.toLowerCase();

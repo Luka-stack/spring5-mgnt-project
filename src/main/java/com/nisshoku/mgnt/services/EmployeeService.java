@@ -19,7 +19,7 @@ public interface EmployeeService {
 
     EmployeeDTO createNewEmployeeWithExistingProject(Integer id, EmployeeDTO employeeDTO);
 
-    EmployeeDTO updateEmployeeFullBody(Integer id, EmployeeDTO employeeDTO);
+    EmployeeDTO updateEmployee(Integer id, EmployeeDTO employeeDTO);
 
     EmployeeDTO patchEmployee(Integer id, EmployeeDTO employeeDTO);
 

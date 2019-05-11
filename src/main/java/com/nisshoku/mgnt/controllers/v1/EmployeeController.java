@@ -49,7 +49,7 @@ public class EmployeeController {
         return employeeService.createNewEmployee(employeeDTO);
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/project/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public EmployeeDTO createNewEmployeeWithExistingProject(@RequestBody EmployeeDTO employeeDTO,
                                                             @PathVariable Integer id) {
@@ -59,7 +59,13 @@ public class EmployeeController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EmployeeDTO updateEmployee(@RequestBody EmployeeDTO employeeDTO, @PathVariable Integer id) {
-        return employeeService.updateEmployeeFullBody(id, employeeDTO);
+        return employeeService.updateEmployee(id, employeeDTO);
+    }
+
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public EmployeeDTO patchEmployee(@RequestBody EmployeeDTO employeeDTO, @PathVariable Integer id) {
+        return employeeService.patchEmployee(id, employeeDTO);
     }
 
     @DeleteMapping("/{id}")
