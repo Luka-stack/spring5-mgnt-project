@@ -23,5 +23,11 @@ public interface EmployeeService {
 
     EmployeeDTO patchEmployee(Integer id, EmployeeDTO employeeDTO);
 
+    void addProjectToEmployee(Integer employeeId, Integer projectId);
+
+    void deleteProjectFromEmployee(Integer employeeId, Integer projectId);
+
+    void deleteAllProjectsFromEmployee(Integer employeeId);
+
     void deleteEmployeeById(Integer id);
 }

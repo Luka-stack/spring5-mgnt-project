@@ -12,6 +12,7 @@ import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -185,29 +186,53 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public void addProjectToEmployee(Integer employeeId, Integer projectId) {
+
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(RuntimeException::new);
+        Project foundProject = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+
+        employee.getProjects().add(foundProject);
+        foundProject.getEmployees().add(employee);
+
+        projectRepository.save(foundProject);
+        employeeRepository.save(employee);
+    }
+
+    @Override
+    public void deleteProjectFromEmployee(Integer employeeId, Integer projectId) {
+
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(RuntimeException::new);
+        Project foundProject = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+
+        employee.getProjects().forEach(project -> {
+
+            if (project.getId().equals(projectId)) {
+                project.getEmployees().remove(employee);
+                projectRepository.save(project);
+            }
+        });
+
+        employee.getProjects().remove(foundProject);
+    }
+
+    @Override
+    public void deleteAllProjectsFromEmployee(Integer employeeId) {
+
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(RuntimeException::new);
+
+        employee.getProjects().forEach(project -> {
+            project.getEmployees().remove(employee);
+            projectRepository.save(project);
+        });
+
+        employee.setProjects(new HashSet<>());
+    }
+
+    @Override
     public void deleteEmployeeById(Integer id) {
 
         employeeRepository.deleteById(id);
     }
-
-/*    private EmployeeDTO saveAndReturnDTO(Employee employee) {
-
-        Employee savedEmployee = employeeRepository.save(employee);
-        EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
-
-        returnedDTO.setEmployeeUrl(getEmployeeUrl(savedEmployee.getId()));
-        returnedDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
-
-        if (employee.getProjects() != null && employee.getProjects().size() > 0) {
-            employee.getProjects().forEach(project -> {
-                employee.setProjects(null);
-                project.getEmployees().add(employee);
-                projectRepository.save(project);
-            });
-        }
-
-        return returnedDTO;
-    }*/
 
     private String getProjectUrl(String title) {
         return ProjectController.URL_BASE + "/" + title.toLowerCase();

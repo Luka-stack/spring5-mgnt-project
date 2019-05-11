@@ -1,13 +1,11 @@
 package com.nisshoku.mgnt.services;
 
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
-import com.nisshoku.mgnt.api.v1.domain.project.ProjectBaseDTO;
 import com.nisshoku.mgnt.api.v1.mappers.EmployeeMapper;
 import com.nisshoku.mgnt.bootstrap.DataLoader;
 import com.nisshoku.mgnt.domain.Employee;
 import com.nisshoku.mgnt.domain.Language;
 import com.nisshoku.mgnt.domain.Project;
-import com.nisshoku.mgnt.domain.State;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
 import com.nisshoku.mgnt.repositories.TaskRepository;
@@ -39,7 +37,7 @@ public class EmployeeServiceImplIT {
     @Autowired
     TaskRepository taskRepository;
 
-    EmployeeService employeeService;
+    private EmployeeService employeeService;
 
     @Before
     public void setUp() throws Exception {
@@ -110,6 +108,48 @@ public class EmployeeServiceImplIT {
         assertNotEquals(orginalName, employeeDB.getFirstName());
         assertEquals(FIRSTNAME, employeeDB.getFirstName());
         assertNotEquals(0, employeeDB.getProjects().size());
+    }
+
+    @Test
+    public void addProjectToEmployee() {
+
+        Integer employeeId = getEmployeeIdValue();
+        Employee employee = employeeRepository.getOne(employeeId);
+        assertNotNull(employee);
+
+        int oldProjectsSize = employee.getProjects().size();
+
+        employeeService.addProjectToEmployee(employeeId, 3);
+
+        assertNotEquals(oldProjectsSize, employee.getProjects().size());
+        assertEquals(oldProjectsSize+1, employee.getProjects().size());
+    }
+
+    @Test
+    public void deleteProjectFromEmployee() {
+
+        Integer employeeId = getEmployeeIdValue();
+        Employee employee = employeeRepository.getOne(employeeId);
+        assertNotNull(employee);
+
+        int oldProjectsSize = employee.getProjects().size();
+
+        employeeService.deleteProjectFromEmployee(employeeId, 1);
+
+        assertNotEquals(oldProjectsSize, employee.getProjects().size());
+        assertEquals(oldProjectsSize-1, employee.getProjects().size());
+    }
+
+    @Test
+    public void deleteAllProjectsFromEmployee() {
+
+        Integer employeeId = getEmployeeIdValue();
+        Employee employee = employeeRepository.getOne(employeeId);
+        assertNotNull(employee);
+
+        employeeService.deleteAllProjectsFromEmployee(employeeId);
+
+        assertEquals(0, employee.getProjects().size());
     }
 
     @Test

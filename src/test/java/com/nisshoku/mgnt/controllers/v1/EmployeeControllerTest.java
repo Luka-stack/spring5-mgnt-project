@@ -242,5 +242,4 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$.projects", hasSize(1)))
                 .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
     }
-
 }
