@@ -221,4 +221,44 @@ public class ProjectControllerTest {
 
         verify(projectService).deleteProjectById(anyInt());
     }
+
+    @Test
+    public void addEmployeeToProject() throws Exception {
+
+        mockMvc.perform(post(ProjectController.URL_BASE +  "/1/add_employee/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(projectService).addEmployeeToProject(anyInt(), anyInt());
+    }
+
+    @Test
+    public void deleteEmployeeFromProject() throws Exception {
+
+        mockMvc.perform(post(ProjectController.URL_BASE +  "/1/delete_employee/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(projectService).deleteEmployeeFromProject(anyInt(), anyInt());
+    }
+
+    @Test
+    public void deleteAllEmployeesFromProject() throws Exception {
+
+        mockMvc.perform(post(ProjectController.URL_BASE +  "/clear_employees/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(projectService).deleteAllEmployeesFromProject(anyInt());
+    }
+
+/*    @Test
+    public void deleteTaskFromEmployee() throws Exception {
+
+        mockMvc.perform(delete(ProjectController.URL_BASE +  "/1/delete_task/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(projectService).deleteTaskFromProject(anyInt(), anyInt());
+    }*/
 }

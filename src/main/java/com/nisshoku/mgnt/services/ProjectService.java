@@ -24,4 +24,14 @@ public interface ProjectService {
     List<ProjectDTO> getProjectsByYear(String year);
 
     void deleteProjectById(Integer id);
+
+    void addEmployeeToProject(Integer projectId, Integer employeeId);
+
+    void deleteEmployeeFromProject(Integer projectId, Integer employeeId);
+
+    void deleteAllEmployeesFromProject(Integer projectId);
+
+    /*void deleteTaskFromProject(Integer projectId, Integer taskId);
+
+    void deleteAllTasksFromProject(Integer projectId);*/
 }

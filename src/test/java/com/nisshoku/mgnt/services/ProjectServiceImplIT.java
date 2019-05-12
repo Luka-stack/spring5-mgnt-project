@@ -46,7 +46,8 @@ public class ProjectServiceImplIT {
         DataLoader dataLoader = new DataLoader(employeeRepository, projectRepository, taskRepository);
         dataLoader.run();
 
-        projectService = new ProjectServiceImpl(projectRepository, ProjectMapper.INSTANCE);
+        projectService = new ProjectServiceImpl(projectRepository, employeeRepository, taskRepository,
+                                                ProjectMapper.INSTANCE);
     }
 
     @Test
@@ -99,6 +100,68 @@ public class ProjectServiceImplIT {
 
         assertEquals(beforeList.size() - 1, afterList.size());
     }
+
+    @Test
+    public void addEmployeeToProject() {
+
+        Project projectDB = getValidProject();
+        assertNotNull(projectDB);
+
+        int oldEmployeeSize = projectDB.getEmployees().size();
+
+        projectService.addEmployeeToProject(projectDB.getId(), 3);
+
+        assertNotEquals(projectDB.getEmployees().size(), oldEmployeeSize);
+        assertEquals(oldEmployeeSize + 1, projectDB.getEmployees().size());
+    }
+
+    @Test
+    public void deleteEmployeeFromProject() {
+
+        Project projectDB = getValidProject();
+        assertNotNull(projectDB);
+
+        int oldEmployeeSize = projectDB.getEmployees().size();
+
+        projectService.deleteEmployeeFromProject(projectDB.getId(), 1);
+
+        assertEquals(oldEmployeeSize - 1, projectDB.getEmployees().size());
+    }
+
+    @Test
+    public void deleteAllEmployeesFromProject() {
+
+        Project projectDB = getValidProject();
+        assertNotNull(projectDB);
+
+        projectService.deleteAllEmployeesFromProject(projectDB.getId());
+
+        assertEquals(0, projectDB.getEmployees().size());
+    }
+
+/*    @Test
+    public void deleteTaskFromProject() {
+
+        Project projectDB = getValidProject();
+        assertNotNull(projectDB);
+
+        int oldTaskSize = projectDB.getTasks().size();
+
+        projectService.deleteTaskFromProject(projectDB.getId(), 1);
+
+        assertEquals(oldTaskSize - 1, projectDB.getTasks().size());
+    }
+
+    @Test
+    public void deleteAllTasksFromProject() {
+
+        Project projectDB = getValidProject();
+        assertNotNull(projectDB);
+
+        projectService.deleteAllTasksFromProject(projectDB.getId());
+
+        assertEquals(0, projectDB.getTasks().size());
+    }*/
 
     private Project getValidProject() {
 

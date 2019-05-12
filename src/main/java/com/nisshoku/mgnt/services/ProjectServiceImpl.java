@@ -3,14 +3,19 @@ package com.nisshoku.mgnt.services;
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectDTO;
 import com.nisshoku.mgnt.api.v1.mappers.ProjectMapper;
 import com.nisshoku.mgnt.controllers.v1.ProjectController;
+import com.nisshoku.mgnt.domain.Employee;
 import com.nisshoku.mgnt.domain.Project;
 import com.nisshoku.mgnt.domain.State;
+import com.nisshoku.mgnt.domain.Task;
+import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
+import com.nisshoku.mgnt.repositories.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,10 +23,15 @@ import java.util.stream.Collectors;
 public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final EmployeeRepository employeeRepository;
+    private final TaskRepository taskRepository;
     private final ProjectMapper projectMapper;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, ProjectMapper projectMapper) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeRepository employeeRepository,
+                              TaskRepository taskRepository, ProjectMapper projectMapper) {
         this.projectRepository = projectRepository;
+        this.employeeRepository = employeeRepository;
+        this.taskRepository = taskRepository;
         this.projectMapper = projectMapper;
     }
 
@@ -164,6 +174,63 @@ public class ProjectServiceImpl implements ProjectService {
     public void deleteProjectById(Integer id) {
         projectRepository.deleteById(id);
     }
+
+    @Override
+    public void addEmployeeToProject(Integer projectId, Integer employeeId) {
+
+        Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(RuntimeException::new);
+
+        project.getEmployees().add(employee);
+        employee.getProjects().add(project);
+
+        projectRepository.save(project);
+        employeeRepository.save(employee);
+    }
+
+    @Override
+    public void deleteEmployeeFromProject(Integer projectId, Integer employeeId) {
+
+        Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(RuntimeException::new);
+
+        project.getEmployees().remove(employee);
+        employee.getProjects().remove(project);
+
+        projectRepository.save(project);
+        employeeRepository.save(employee);
+    }
+
+    @Override
+    public void deleteAllEmployeesFromProject(Integer projectId) {
+
+        Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+
+        project.getEmployees().forEach(employee -> {
+            employee.getProjects().remove(project);
+            employeeRepository.save(employee);
+        });
+
+        project.setEmployees(new HashSet<>());
+        projectRepository.save(project);
+    }
+
+/*    @Override
+    public void deleteTaskFromProject(Integer projectId, Integer taskId) {
+
+        taskRepository.deleteById(taskId);
+    }
+
+    @Override
+    public void deleteAllTasksFromProject(Integer projectId) {
+
+        projectRepository.findById(projectId).map(project -> {
+
+            project.getTasks().forEach(task -> taskRepository.deleteById(task.getId()));
+
+            return project;
+        }).orElseThrow(RuntimeException::new);
+    }*/
 
     private String getProjectUrl(Integer id) {
         return ProjectController.URL_BASE + "/" + id;

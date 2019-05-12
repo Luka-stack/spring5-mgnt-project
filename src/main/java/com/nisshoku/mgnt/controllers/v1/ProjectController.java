@@ -2,7 +2,6 @@ package com.nisshoku.mgnt.controllers.v1;
 
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectDTO;
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectListDTO;
-import com.nisshoku.mgnt.domain.Project;
 import com.nisshoku.mgnt.domain.State;
 import com.nisshoku.mgnt.services.ProjectService;
 import org.springframework.http.HttpStatus;
@@ -73,5 +72,29 @@ public class ProjectController {
     public void deleteProject(@PathVariable Integer id) {
         projectService.deleteProjectById(id);
     }
+
+    @PostMapping("/{projectId}/add_employee/{employeeId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void addEmployeeToProject(@PathVariable Integer projectId, @PathVariable Integer employeeId) {
+        projectService.addEmployeeToProject(projectId, employeeId);
+    }
+
+    @PostMapping("/{projectId}/delete_employee/{employeeId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteEmployeeFromProject(@PathVariable Integer projectId, @PathVariable Integer employeeId) {
+        projectService.deleteEmployeeFromProject(projectId, employeeId);
+    }
+
+    @PostMapping("/clear_employees/{projectId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteAllEmployeesFromProject(@PathVariable Integer projectId) {
+        projectService.deleteAllEmployeesFromProject(projectId);
+    }
+/*
+    @DeleteMapping("/{projectId}/delete_task/{taskId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteTaskFromProject(@PathVariable Integer projectId, @PathVariable Integer taskId) {
+        projectService.deleteTaskFromProject(projectId, taskId);
+    }*/
 
 }
