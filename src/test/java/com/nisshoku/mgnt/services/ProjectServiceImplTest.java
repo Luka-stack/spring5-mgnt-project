@@ -2,6 +2,7 @@ package com.nisshoku.mgnt.services;
 
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectDTO;
 import com.nisshoku.mgnt.api.v1.mappers.ProjectMapper;
+import com.nisshoku.mgnt.controllers.v1.ProjectController;
 import com.nisshoku.mgnt.domain.Project;
 import com.nisshoku.mgnt.domain.State;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
@@ -137,5 +138,26 @@ public class ProjectServiceImplTest {
 
         // then
         assertEquals(TITLE, projectDTO.getTitle());
+    }
+
+    @Test
+    public void createProject() {
+
+        // given
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setTitle(TITLE);
+
+        Project project = new Project();
+        project.setId(ID);
+        project.setTitle(TITLE);
+
+        when(projectRepository.save(any())).thenReturn(project);
+
+        // when
+        ProjectDTO DTOSaved = projectService.createProject(projectDTO);
+
+        // then
+        assertEquals(projectDTO.getTitle(), DTOSaved.getTitle());
+        assertEquals(ProjectController.URL_BASE + "/1", DTOSaved.getProjectUrl());
     }
 }

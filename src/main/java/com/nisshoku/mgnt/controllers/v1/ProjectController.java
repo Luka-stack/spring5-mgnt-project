@@ -2,6 +2,7 @@ package com.nisshoku.mgnt.controllers.v1;
 
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectDTO;
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectListDTO;
+import com.nisshoku.mgnt.domain.Project;
 import com.nisshoku.mgnt.domain.State;
 import com.nisshoku.mgnt.services.ProjectService;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,30 @@ public class ProjectController {
     @ResponseStatus(HttpStatus.OK)
     public ProjectDTO getProjectByTitle(@PathVariable String title) {
         return projectService.getProjectByTitle(title);
+    }
+
+    @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProjectDTO createProject(@RequestBody ProjectDTO projectDTO) {
+        return projectService.createProject(projectDTO);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ProjectDTO updateProject(@RequestBody ProjectDTO projectDTO, @PathVariable Integer id) {
+        return projectService.updateProject(id, projectDTO);
+    }
+
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ProjectDTO patchProject(@RequestBody ProjectDTO projectDTO, @PathVariable Integer id) {
+        return projectService.patchProject(id, projectDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteProject(@PathVariable Integer id) {
+        projectService.deleteProjectById(id);
     }
 
 }
