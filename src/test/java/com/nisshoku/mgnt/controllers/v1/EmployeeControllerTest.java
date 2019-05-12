@@ -20,11 +20,9 @@ import static com.nisshoku.mgnt.controllers.AbstractRestControllerTest.asJsonStr
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -241,5 +239,45 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)))
                 .andExpect(jsonPath("$.projects", hasSize(1)))
                 .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
+    }
+
+    @Test
+    public void deleteProjectById() throws Exception {
+
+        mockMvc.perform(delete(EmployeeController.BASE_URL +  "/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(employeeService).deleteEmployeeById(anyInt());
+    }
+
+    @Test
+    public void addProjectToEmployee() throws Exception {
+
+        mockMvc.perform(post(EmployeeController.BASE_URL +  "/1/add_project/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(employeeService).addProjectToEmployee(anyInt(), anyInt());
+    }
+
+    @Test
+    public void deleteProjectFromEmployee() throws Exception {
+
+        mockMvc.perform(post(EmployeeController.BASE_URL +  "/1/delete_project/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(employeeService).deleteProjectFromEmployee(anyInt(), anyInt());
+    }
+
+    @Test
+    public void deleteAllProjects() throws Exception {
+
+        mockMvc.perform(post(EmployeeController.BASE_URL +  "/clear_projects/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(employeeService).deleteAllProjectsFromEmployee(anyInt());
     }
 }

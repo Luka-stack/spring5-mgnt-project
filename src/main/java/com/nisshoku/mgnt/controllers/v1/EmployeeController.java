@@ -68,19 +68,19 @@ public class EmployeeController {
         return employeeService.patchEmployee(id, employeeDTO);
     }
 
-    @GetMapping("{employeeId}/add_project/{projectId}")
+    @PostMapping("{employeeId}/add_project/{projectId}")
     @ResponseStatus(HttpStatus.OK)
     public void addProjectToEmployee(@PathVariable Integer employeeId, @PathVariable Integer projectId) {
         employeeService.addProjectToEmployee(employeeId, projectId);
     }
 
-    @GetMapping("{employeeId}/delete_project/{projectId}")
+    @PostMapping("{employeeId}/delete_project/{projectId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteProjectFromEmployee(@PathVariable Integer employeeId, @PathVariable Integer projectId) {
         employeeService.deleteProjectFromEmployee(employeeId, projectId);
     }
 
-    @GetMapping("/clear_projects/{employeeId}")
+    @PostMapping("/clear_projects/{employeeId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteAllProjects(@PathVariable Integer employeeId) {
         employeeService.deleteAllProjectsFromEmployee(employeeId);
