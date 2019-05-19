@@ -215,22 +215,30 @@ public class ProjectServiceImpl implements ProjectService {
         projectRepository.save(project);
     }
 
-/*    @Override
+    @Override
     public void deleteTaskFromProject(Integer projectId, Integer taskId) {
 
-        taskRepository.deleteById(taskId);
+        Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+
+        for (Task task : project.getTasks()) {
+            if (task.getId().equals(taskId)) {
+                project.getTasks().remove(task);
+                taskRepository.deleteById(task.getId());
+                break;
+            }
+        }
     }
 
     @Override
     public void deleteAllTasksFromProject(Integer projectId) {
 
-        projectRepository.findById(projectId).map(project -> {
+        Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
 
-            project.getTasks().forEach(task -> taskRepository.deleteById(task.getId()));
-
-            return project;
-        }).orElseThrow(RuntimeException::new);
-    }*/
+        project.getTasks().forEach(task -> {
+            project.getTasks().remove(task);
+            taskRepository.deleteById(task.getId());
+        });
+    }
 
     private String getProjectUrl(Integer id) {
         return ProjectController.URL_BASE + "/" + id;

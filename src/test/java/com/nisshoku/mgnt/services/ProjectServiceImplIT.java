@@ -5,6 +5,7 @@ import com.nisshoku.mgnt.api.v1.mappers.ProjectMapper;
 import com.nisshoku.mgnt.bootstrap.DataLoader;
 import com.nisshoku.mgnt.domain.Project;
 import com.nisshoku.mgnt.domain.State;
+import com.nisshoku.mgnt.domain.Task;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
 import com.nisshoku.mgnt.repositories.TaskRepository;
@@ -18,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -139,29 +141,33 @@ public class ProjectServiceImplIT {
         assertEquals(0, projectDB.getEmployees().size());
     }
 
-/*    @Test
+    @Test
     public void deleteTaskFromProject() {
 
         Project projectDB = getValidProject();
         assertNotNull(projectDB);
 
-        int oldTaskSize = projectDB.getTasks().size();
-
         projectService.deleteTaskFromProject(projectDB.getId(), 1);
 
-        assertEquals(oldTaskSize - 1, projectDB.getTasks().size());
+        assertEquals(0, projectDB.getTasks().size());
     }
 
-    @Test
-    public void deleteAllTasksFromProject() {
 
-        Project projectDB = getValidProject();
+    @Test
+    public void deleteAllTasksFromProject() throws Exception {
+
+        Project projectDB = projectRepository.findById(1).get();
+        int projectsTasks = projectDB.getTasks().size();
+        List<Task> tasksBefore = taskRepository.findAll();
         assertNotNull(projectDB);
 
         projectService.deleteAllTasksFromProject(projectDB.getId());
 
+        List<Task> tasksAfter = taskRepository.findAll();
+
         assertEquals(0, projectDB.getTasks().size());
-    }*/
+        assertEquals(tasksBefore.size() - projectsTasks, tasksAfter.size());
+    }
 
     private Project getValidProject() {
 
@@ -169,5 +175,12 @@ public class ProjectServiceImplIT {
 
         return projects.get(0);
     }
+
+/*    private Integer getValidId() {
+
+        List<Project> projects = projectRepository.findAll();
+
+        return projects.get(0).getId();
+    }*/
 
 }

@@ -252,13 +252,23 @@ public class ProjectControllerTest {
         verify(projectService).deleteAllEmployeesFromProject(anyInt());
     }
 
-/*    @Test
-    public void deleteTaskFromEmployee() throws Exception {
+    @Test
+    public void deleteTaskFromProject() throws Exception {
 
         mockMvc.perform(delete(ProjectController.URL_BASE +  "/1/delete_task/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         verify(projectService).deleteTaskFromProject(anyInt(), anyInt());
-    }*/
+    }
+
+    @Test
+    public void deleteAllTasksFromProject() throws Exception {
+
+        mockMvc.perform(delete(ProjectController.URL_BASE +  "/1/clear_tasks")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(projectService).deleteAllTasksFromProject(anyInt());
+    }
 }

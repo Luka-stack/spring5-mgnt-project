@@ -85,16 +85,22 @@ public class ProjectController {
         projectService.deleteEmployeeFromProject(projectId, employeeId);
     }
 
-    @PostMapping("/clear_employees/{projectId}")
+    @PostMapping("{projectId}/clear_employees")
     @ResponseStatus(HttpStatus.OK)
     public void deleteAllEmployeesFromProject(@PathVariable Integer projectId) {
         projectService.deleteAllEmployeesFromProject(projectId);
     }
-/*
+
     @DeleteMapping("/{projectId}/delete_task/{taskId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteTaskFromProject(@PathVariable Integer projectId, @PathVariable Integer taskId) {
         projectService.deleteTaskFromProject(projectId, taskId);
-    }*/
+    }
+
+    @DeleteMapping("/{projectId}/clear_tasks")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteAllTasksFromProject(@PathVariable Integer projectId) {
+        projectService.deleteAllTasksFromProject(projectId);
+    }
 
 }
