@@ -80,7 +80,7 @@ public class EmployeeController {
         employeeService.deleteProjectFromEmployee(employeeId, projectId);
     }
 
-    @PostMapping("/clear_projects/{employeeId}")
+    @PostMapping("{employeeId}/clear_projects")
     @ResponseStatus(HttpStatus.OK)
     public void deleteAllProjects(@PathVariable Integer employeeId) {
         employeeService.deleteAllProjectsFromEmployee(employeeId);
