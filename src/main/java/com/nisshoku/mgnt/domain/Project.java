@@ -30,6 +30,7 @@ public class Project extends BaseEntity {
     private String description;
 
     @NotNull
+    @Enumerated(value = EnumType.STRING)
     private State stateOfProject;
 
     @NotNull

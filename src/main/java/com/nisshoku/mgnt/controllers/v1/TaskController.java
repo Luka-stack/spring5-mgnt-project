@@ -1,5 +1,6 @@
 package com.nisshoku.mgnt.controllers.v1;
 
+import com.nisshoku.mgnt.api.v1.domain.task.TaskBaseDTO;
 import com.nisshoku.mgnt.api.v1.domain.task.TaskListDTO;
 import com.nisshoku.mgnt.domain.State;
 import com.nisshoku.mgnt.services.TaskService;
@@ -26,13 +27,26 @@ public class TaskController {
 
     @GetMapping("/state/{state}")
     @ResponseStatus(HttpStatus.OK)
-    public TaskListDTO getTasksByState(@PathVariable State state) {
+    public TaskListDTO getTasksByState(@PathVariable String state) {
         return new TaskListDTO(taskService.getTasksByState(state));
     }
 
-    @GetMapping("/notdone")
-    @ResponseStatus(HttpStatus.OK)
-    public TaskListDTO getNotDoneTasks() {
-        return new TaskListDTO(taskService.getNotDoneTasks());
+    @PutMapping("/project/{projectId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public TaskBaseDTO createTask(@RequestBody TaskBaseDTO task, @PathVariable Integer projectId) {
+        return taskService.createTask(task, projectId);
     }
+
+    @PutMapping("/add_tasks/{projectId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public TaskListDTO addListOfTasks(@RequestBody TaskListDTO tasks, @PathVariable Integer projectId) {
+        return new TaskListDTO(taskService.addListOfTasks(tasks, projectId));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    private void deleteTaskById(@PathVariable Integer id) {
+        taskService.deleteTaskById(id);
+    }
+
 }
