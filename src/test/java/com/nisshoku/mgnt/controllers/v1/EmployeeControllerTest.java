@@ -1,6 +1,7 @@
 package com.nisshoku.mgnt.controllers.v1;
 
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
+import com.nisshoku.mgnt.api.v1.domain.project.ProjectBaseDTO;
 import com.nisshoku.mgnt.domain.Language;
 import com.nisshoku.mgnt.services.EmployeeService;
 import org.junit.Before;
@@ -15,11 +16,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.nisshoku.mgnt.controllers.AbstractRestControllerTest.asJsonString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -125,5 +128,156 @@ public class EmployeeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName", equalTo(FIRSTNAME)))
                 .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)));
+    }
+
+    @Test
+    public void creatNewEmployee() throws Exception {
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
+
+        EmployeeDTO returnedDTO = new EmployeeDTO();
+        returnedDTO.setFirstName(FIRSTNAME);
+        returnedDTO.setLastName(LASTNAME);
+        returnedDTO.setEmployeeUrl(EmployeeController.BASE_URL + "/1");
+
+        when(employeeService.createNewEmployee(any())).thenReturn(returnedDTO);
+
+        mockMvc.perform(post(EmployeeController.BASE_URL)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(employeeDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.firstName", equalTo(FIRSTNAME)))
+                .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)))
+                .andExpect(jsonPath("$.projects", hasSize(0)))
+                .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
+    }
+
+    @Test
+    public void createNewEmployeeWithExistingProject() throws Exception {
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
+
+        ProjectBaseDTO projectBaseDTO = new ProjectBaseDTO();
+
+        EmployeeDTO returnedDTO = new EmployeeDTO();
+        returnedDTO.setFirstName(FIRSTNAME);
+        returnedDTO.setLastName(LASTNAME);
+        returnedDTO.getProjects().add(projectBaseDTO);
+        returnedDTO.setEmployeeUrl(EmployeeController.BASE_URL + "/1");
+
+        when(employeeService.createNewEmployeeWithExistingProject(anyInt(), any())).thenReturn(returnedDTO);
+
+        mockMvc.perform(post(EmployeeController.BASE_URL + "/project/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(employeeDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.firstName", equalTo(FIRSTNAME)))
+                .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)))
+                .andExpect(jsonPath("$.projects", hasSize(1)))
+                .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
+    }
+
+    @Test
+    public void updateEmployee() throws Exception {
+
+
+        ProjectBaseDTO project = new ProjectBaseDTO();
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
+        employeeDTO.getProjects().add(project);
+
+        EmployeeDTO returnedDTO = new EmployeeDTO();
+        returnedDTO.setFirstName(FIRSTNAME);
+        returnedDTO.setLastName(LASTNAME);
+        returnedDTO.getProjects().add(project);
+        returnedDTO.setEmployeeUrl(EmployeeController.BASE_URL + "/1");
+
+        when(employeeService.updateEmployee(anyInt(), any())).thenReturn(returnedDTO);
+
+        mockMvc.perform(put(EmployeeController.BASE_URL + "/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(employeeDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", equalTo(FIRSTNAME)))
+                .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)))
+                .andExpect(jsonPath("$.projects", hasSize(1)))
+                .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
+    }
+
+    @Test
+    public void patchEmployee() throws Exception {
+
+        ProjectBaseDTO project = new ProjectBaseDTO();
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.getProjects().add(project);
+
+        EmployeeDTO returnedDTO = new EmployeeDTO();
+        returnedDTO.setFirstName(FIRSTNAME + 123);
+        returnedDTO.setLastName(LASTNAME);
+        returnedDTO.getProjects().add(project);
+        returnedDTO.setEmployeeUrl(EmployeeController.BASE_URL + "/1");
+
+        when(employeeService.patchEmployee(anyInt(), any(EmployeeDTO.class))).thenReturn(returnedDTO);
+
+        mockMvc.perform(patch(EmployeeController.BASE_URL + "/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(employeeDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", equalTo(FIRSTNAME + 123)))
+                .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)))
+                .andExpect(jsonPath("$.projects", hasSize(1)))
+                .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
+    }
+
+    @Test
+    public void deleteProjectById() throws Exception {
+
+        mockMvc.perform(delete(EmployeeController.BASE_URL +  "/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(employeeService).deleteEmployeeById(anyInt());
+    }
+
+    @Test
+    public void addProjectToEmployee() throws Exception {
+
+        mockMvc.perform(post(EmployeeController.BASE_URL +  "/1/add_project/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(employeeService).addProjectToEmployee(anyInt(), anyInt());
+    }
+
+    @Test
+    public void deleteProjectFromEmployee() throws Exception {
+
+        mockMvc.perform(delete(EmployeeController.BASE_URL +  "/1/delete_project/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(employeeService).deleteProjectFromEmployee(anyInt(), anyInt());
+    }
+
+    @Test
+    public void deleteAllProjects() throws Exception {
+
+        mockMvc.perform(delete(EmployeeController.BASE_URL +  "/1/clear_projects")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(employeeService).deleteAllProjectsFromEmployee(anyInt());
     }
 }

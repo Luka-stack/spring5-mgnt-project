@@ -19,11 +19,11 @@ import java.util.List;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.nisshoku.mgnt.controllers.AbstractRestControllerTest.asJsonString;
 
 public class ProjectControllerTest {
 
@@ -138,5 +138,137 @@ public class ProjectControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title", equalTo(TITLE)));
 
+    }
+
+    @Test
+    public void createProject() throws Exception {
+
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setTitle(TITLE);
+        projectDTO.setDescription(DESCRIPTION);
+
+        ProjectDTO returnedDTO = new ProjectDTO();
+        returnedDTO.setTitle(TITLE);
+        returnedDTO.setDescription(DESCRIPTION);
+        returnedDTO.setProjectUrl(ProjectController.URL_BASE + "/1");
+
+        when(projectService.createProject(any())).thenReturn(returnedDTO);
+
+        mockMvc.perform(post(ProjectController.URL_BASE)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(projectDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.title", equalTo(TITLE)))
+                .andExpect(jsonPath("$.description", equalTo(DESCRIPTION)))
+                .andExpect(jsonPath("$.projectUrl", equalTo(ProjectController.URL_BASE + "/1")));
+    }
+
+    @Test
+    public void updateProject() throws Exception {
+
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setTitle(TITLE);
+        projectDTO.setDescription(DESCRIPTION);
+
+        ProjectDTO returnedDTO = new ProjectDTO();
+        returnedDTO.setTitle(TITLE);
+        returnedDTO.setDescription(DESCRIPTION);
+        returnedDTO.setProjectUrl(ProjectController.URL_BASE + "/1");
+
+        when(projectService.updateProject(anyInt(), any())).thenReturn(returnedDTO);
+
+        mockMvc.perform(put(ProjectController.URL_BASE + "/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(projectDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title", equalTo(TITLE)))
+                .andExpect(jsonPath("$.description", equalTo(DESCRIPTION)))
+                .andExpect(jsonPath("$.projectUrl", equalTo(ProjectController.URL_BASE + "/1")));
+    }
+
+    @Test
+    public void patchProject() throws Exception {
+
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setTitle(TITLE);
+        projectDTO.setDescription(DESCRIPTION);
+
+        ProjectDTO returnedDTO = new ProjectDTO();
+        returnedDTO.setTitle(TITLE);
+        returnedDTO.setDescription(DESCRIPTION);
+        returnedDTO.setProjectUrl(ProjectController.URL_BASE + "/1");
+
+        when(projectService.patchProject(anyInt(), any())).thenReturn(returnedDTO);
+
+        mockMvc.perform(patch(ProjectController.URL_BASE + "/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(projectDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title", equalTo(TITLE)))
+                .andExpect(jsonPath("$.description", equalTo(DESCRIPTION)))
+                .andExpect(jsonPath("$.projectUrl", equalTo(ProjectController.URL_BASE + "/1")));
+    }
+
+    @Test
+    public void deleteProjectById() throws Exception {
+
+        mockMvc.perform(delete(ProjectController.URL_BASE +  "/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(projectService).deleteProjectById(anyInt());
+    }
+
+    @Test
+    public void addEmployeeToProject() throws Exception {
+
+        mockMvc.perform(post(ProjectController.URL_BASE +  "/1/add_employee/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(projectService).addEmployeeToProject(anyInt(), anyInt());
+    }
+
+    @Test
+    public void deleteEmployeeFromProject() throws Exception {
+
+        mockMvc.perform(delete(ProjectController.URL_BASE +  "/1/delete_employee/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(projectService).deleteEmployeeFromProject(anyInt(), anyInt());
+    }
+
+    @Test
+    public void deleteAllEmployeesFromProject() throws Exception {
+
+        mockMvc.perform(delete(ProjectController.URL_BASE +  "/1/clear_employees")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(projectService).deleteAllEmployeesFromProject(anyInt());
+    }
+
+    @Test
+    public void deleteTaskFromProject() throws Exception {
+
+        mockMvc.perform(delete(ProjectController.URL_BASE +  "/1/delete_task/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(projectService).deleteTaskFromProject(anyInt(), anyInt());
+    }
+
+    @Test
+    public void deleteAllTasksFromProject() throws Exception {
+
+        mockMvc.perform(delete(ProjectController.URL_BASE +  "/1/clear_tasks")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(projectService).deleteAllTasksFromProject(anyInt());
     }
 }

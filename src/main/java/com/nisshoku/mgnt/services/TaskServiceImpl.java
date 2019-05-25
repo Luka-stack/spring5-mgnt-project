@@ -1,11 +1,16 @@
 package com.nisshoku.mgnt.services;
 
 import com.nisshoku.mgnt.api.v1.domain.task.TaskBaseDTO;
+import com.nisshoku.mgnt.api.v1.domain.task.TaskListDTO;
 import com.nisshoku.mgnt.api.v1.mappers.TaskMapper;
+import com.nisshoku.mgnt.domain.Project;
 import com.nisshoku.mgnt.domain.State;
+import com.nisshoku.mgnt.domain.Task;
+import com.nisshoku.mgnt.repositories.ProjectRepository;
 import com.nisshoku.mgnt.repositories.TaskRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,10 +18,14 @@ import java.util.stream.Collectors;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final ProjectRepository projectRepository;
     private final TaskMapper taskMapper;
 
-    public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper) {
+
+    public TaskServiceImpl(TaskRepository taskRepository, ProjectRepository projectRepository,
+                           TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
+        this.projectRepository = projectRepository;
         this.taskMapper = taskMapper;
     }
 
@@ -30,20 +39,55 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskBaseDTO> getTasksByState(State state) {
+    public List<TaskBaseDTO> getTasksByState(String state) {
 
-        return taskRepository.findByStateOfTask(state)
+        try {
+            State taskState = State.valueOf(state.toUpperCase());
+
+            return taskRepository.findByStateOfTask(taskState)
                 .stream()
                 .map(taskMapper::taskToTaskBaseDTO)
                 .collect(Collectors.toList());
+        }
+        catch (IllegalArgumentException error) {
+            throw new RuntimeException("Wrong State");
+        }
     }
 
     @Override
-    public List<TaskBaseDTO> getNotDoneTasks() {
+    public List<TaskBaseDTO> addListOfTasks(TaskListDTO tasks, Integer projectId) {
 
-        return taskRepository.findByStateOfTaskIsNotLike(State.DONE)
-                .stream()
-                .map(taskMapper::taskToTaskBaseDTO)
-                .collect(Collectors.toList());
+        Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+        List<TaskBaseDTO> returnedTasks = new ArrayList<>();
+
+        tasks.getTasks().forEach(taskBaseDTO -> {
+            Task task = taskMapper.taskBaseDTOToTask(taskBaseDTO);
+            project.getTasks().add(task);
+            task.setProject(project);
+            returnedTasks.add(taskMapper.taskToTaskBaseDTO(taskRepository.save(task)));
+        });
+
+        projectRepository.save(project);
+
+        return returnedTasks;
     }
+
+    @Override
+    public TaskBaseDTO createTask(TaskBaseDTO task, Integer projectId) {
+
+        Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+        Task taskToSave = taskMapper.taskBaseDTOToTask(task);
+
+        project.getTasks().add(taskToSave);
+        TaskBaseDTO savedTask = taskMapper.taskToTaskBaseDTO(taskRepository.save(taskToSave));
+
+        return savedTask;
+    }
+
+    @Override
+    public void deleteTaskById(Integer id) {
+
+        taskRepository.deleteById(id);
+    }
+
 }

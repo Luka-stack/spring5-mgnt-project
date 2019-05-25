@@ -2,9 +2,11 @@ package com.nisshoku.mgnt.services;
 
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
 import com.nisshoku.mgnt.api.v1.mappers.EmployeeMapper;
+import com.nisshoku.mgnt.controllers.v1.EmployeeController;
 import com.nisshoku.mgnt.domain.Employee;
 import com.nisshoku.mgnt.domain.Language;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
+import com.nisshoku.mgnt.repositories.ProjectRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -28,12 +30,15 @@ public class EmployeeServiceImplTest {
     @Mock
     EmployeeRepository employeeRepository;
 
+    @Mock
+    ProjectRepository projectRepository;
+
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        employeeService = new EmployeeServiceImpl(EmployeeMapper.INSTANCE, employeeRepository);
+        employeeService = new EmployeeServiceImpl(EmployeeMapper.INSTANCE, employeeRepository, projectRepository);
     }
 
     @Test
@@ -87,7 +92,7 @@ public class EmployeeServiceImplTest {
         when(employeeRepository.findByFavoriteLanguage(any())).thenReturn(employees);
 
         // when
-        List<EmployeeDTO> returnedEmpoyee = employeeService.getEmployeesByLanguage(Language.GO);
+        List<EmployeeDTO> returnedEmpoyee = employeeService.getEmployeesByLanguage("go");
 
         //then
         assertEquals(2, returnedEmpoyee.size());
@@ -96,7 +101,7 @@ public class EmployeeServiceImplTest {
     }
 
     @Test
-    public void getEmployeesByLastNaem() {
+    public void getEmployeesByLastName() {
 
         // given
         Employee employee = new Employee();
@@ -118,5 +123,29 @@ public class EmployeeServiceImplTest {
         assertEquals(2, employeeDTOList.size());
         assertEquals(LASTNAME, employeeDTOList.get(0).getLastName());
         assertEquals(LASTNAME, employeeDTOList.get(1).getLastName());
+    }
+
+    @Test
+    public void createNewEmployee() {
+
+        // given
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
+
+        Employee employeeSaved = new Employee();
+        employeeSaved.setId(ID);
+        employeeSaved.setFirstName(FIRSTNAME);
+        employeeSaved.setLastName(LASTNAME);
+
+        when(employeeRepository.save(any(Employee.class))).thenReturn(employeeSaved);
+
+        // when
+        EmployeeDTO DTOSaved = employeeService.createNewEmployee(employeeDTO);
+
+        // then
+        assertEquals(employeeDTO.getFirstName(), DTOSaved.getFirstName());
+        assertEquals(employeeDTO.getLastName(), DTOSaved.getLastName());
+        assertEquals(EmployeeController.BASE_URL + "/1", DTOSaved.getEmployeeUrl());
     }
 }

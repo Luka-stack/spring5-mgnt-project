@@ -2,9 +2,13 @@ package com.nisshoku.mgnt.services;
 
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectDTO;
 import com.nisshoku.mgnt.api.v1.mappers.ProjectMapper;
+import com.nisshoku.mgnt.controllers.v1.ProjectController;
+import com.nisshoku.mgnt.domain.Employee;
 import com.nisshoku.mgnt.domain.Project;
 import com.nisshoku.mgnt.domain.State;
+import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
+import com.nisshoku.mgnt.repositories.TaskRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -30,11 +34,18 @@ public class ProjectServiceImplTest {
     @Mock
     ProjectRepository projectRepository;
 
+    @Mock
+    EmployeeRepository employeeRepository;
+
+    @Mock
+    TaskRepository taskRepository;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        projectService = new ProjectServiceImpl(projectRepository, ProjectMapper.INSTANCE);
+        projectService = new ProjectServiceImpl(projectRepository, employeeRepository, taskRepository,
+                                                ProjectMapper.INSTANCE);
     }
 
     @Test
@@ -86,7 +97,7 @@ public class ProjectServiceImplTest {
         when(projectRepository.findByStateOfProject(any())).thenReturn(projects);
 
         // when
-        List<ProjectDTO> projectDTOList = projectService.getProjectsByState(State.IN_PROGRESS);
+        List<ProjectDTO> projectDTOList = projectService.getProjectsByState("IN_PROGRESS");
 
         // then
         assertEquals(2, projectDTOList.size());
@@ -137,5 +148,26 @@ public class ProjectServiceImplTest {
 
         // then
         assertEquals(TITLE, projectDTO.getTitle());
+    }
+
+    @Test
+    public void createProject() {
+
+        // given
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setTitle(TITLE);
+
+        Project project = new Project();
+        project.setId(ID);
+        project.setTitle(TITLE);
+
+        when(projectRepository.save(any())).thenReturn(project);
+
+        // when
+        ProjectDTO DTOSaved = projectService.createProject(projectDTO);
+
+        // then
+        assertEquals(projectDTO.getTitle(), DTOSaved.getTitle());
+        assertEquals(ProjectController.URL_BASE + "/1", DTOSaved.getProjectUrl());
     }
 }

@@ -11,7 +11,23 @@ public interface EmployeeService {
 
     List<EmployeeDTO> getAllEmployees();
 
-    List<EmployeeDTO> getEmployeesByLanguage(Language language);
+    List<EmployeeDTO> getEmployeesByLanguage(String language);
 
     List<EmployeeDTO> getEmployeesByLastName(String lastName);
+
+    EmployeeDTO createNewEmployee(EmployeeDTO employeeDTO);
+
+    EmployeeDTO createNewEmployeeWithExistingProject(Integer id, EmployeeDTO employeeDTO);
+
+    EmployeeDTO updateEmployee(Integer id, EmployeeDTO employeeDTO);
+
+    EmployeeDTO patchEmployee(Integer id, EmployeeDTO employeeDTO);
+
+    void addProjectToEmployee(Integer employeeId, Integer projectId);
+
+    void deleteProjectFromEmployee(Integer employeeId, Integer projectId);
+
+    void deleteAllProjectsFromEmployee(Integer employeeId);
+
+    void deleteEmployeeById(Integer id);
 }

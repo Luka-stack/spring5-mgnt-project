@@ -2,7 +2,6 @@ package com.nisshoku.mgnt.controllers.v1;
 
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeListDTO;
-import com.nisshoku.mgnt.domain.Language;
 import com.nisshoku.mgnt.services.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +32,7 @@ public class EmployeeController {
 
     @GetMapping("/lang/{language}")
     @ResponseStatus(HttpStatus.OK)
-    public EmployeeListDTO getEmployeesByLanguage(@PathVariable("language") Language language) {
+    public EmployeeListDTO getEmployeesByLanguage(@PathVariable String language) {
         return new EmployeeListDTO(employeeService.getEmployeesByLanguage(language));
     }
 
@@ -41,5 +40,54 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.OK)
     public EmployeeListDTO getEmployeesByLastName(@PathVariable String lastName) {
         return new EmployeeListDTO(employeeService.getEmployeesByLastName(lastName));
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public EmployeeDTO createNewEmployee(@RequestBody EmployeeDTO employeeDTO) {
+        return employeeService.createNewEmployee(employeeDTO);
+    }
+
+    @PostMapping("/project/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public EmployeeDTO createNewEmployeeWithExistingProject(@RequestBody EmployeeDTO employeeDTO,
+                                                            @PathVariable Integer id) {
+        return employeeService.createNewEmployeeWithExistingProject(id, employeeDTO);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public EmployeeDTO updateEmployee(@RequestBody EmployeeDTO employeeDTO, @PathVariable Integer id) {
+        return employeeService.updateEmployee(id, employeeDTO);
+    }
+
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public EmployeeDTO patchEmployee(@RequestBody EmployeeDTO employeeDTO, @PathVariable Integer id) {
+        return employeeService.patchEmployee(id, employeeDTO);
+    }
+
+    @PostMapping("{employeeId}/add_project/{projectId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void addProjectToEmployee(@PathVariable Integer employeeId, @PathVariable Integer projectId) {
+        employeeService.addProjectToEmployee(employeeId, projectId);
+    }
+
+    @DeleteMapping("{employeeId}/delete_project/{projectId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteProjectFromEmployee(@PathVariable Integer employeeId, @PathVariable Integer projectId) {
+        employeeService.deleteProjectFromEmployee(employeeId, projectId);
+    }
+
+    @DeleteMapping("{employeeId}/clear_projects")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteAllProjects(@PathVariable Integer employeeId) {
+        employeeService.deleteAllProjectsFromEmployee(employeeId);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteEmployeeById(@PathVariable Integer id) {
+        employeeService.deleteEmployeeById(id);
     }
 }
