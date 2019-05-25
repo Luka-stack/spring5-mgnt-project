@@ -264,7 +264,7 @@ public class EmployeeControllerTest {
     @Test
     public void deleteProjectFromEmployee() throws Exception {
 
-        mockMvc.perform(post(EmployeeController.BASE_URL +  "/1/delete_project/1")
+        mockMvc.perform(delete(EmployeeController.BASE_URL +  "/1/delete_project/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -274,7 +274,7 @@ public class EmployeeControllerTest {
     @Test
     public void deleteAllProjects() throws Exception {
 
-        mockMvc.perform(post(EmployeeController.BASE_URL +  "1/clear_projects")
+        mockMvc.perform(delete(EmployeeController.BASE_URL +  "/1/clear_projects")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 

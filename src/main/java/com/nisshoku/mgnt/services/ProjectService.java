@@ -1,8 +1,6 @@
 package com.nisshoku.mgnt.services;
 
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectDTO;
-import com.nisshoku.mgnt.domain.Project;
-import com.nisshoku.mgnt.domain.State;
 
 import java.util.List;
 
@@ -20,7 +18,7 @@ public interface ProjectService {
 
     List<ProjectDTO> getAllProjects();
 
-    List<ProjectDTO> getProjectsByState(State state);
+    List<ProjectDTO> getProjectsByState(String state);
 
     List<ProjectDTO> getProjectsByYear(String year);
 

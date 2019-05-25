@@ -65,19 +65,26 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeDTO> getEmployeesByLanguage(Language language) {
+    public List<EmployeeDTO> getEmployeesByLanguage(String language) {
 
-        return employeeRepository.findByFavoriteLanguage(language)
-                .stream()
-                .map(employee -> {
-                    EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
-                    employeeDTO.setEmployeeUrl(getEmployeeUrl(employee.getId()));
+        try {
+            Language languageSearch = Language.valueOf(language.toUpperCase());
 
-                    for (ProjectBaseDTO project : employeeDTO.getProjects())
-                        project.setProjectUrl(getProjectUrl(project.getTitle()));
+            return employeeRepository.findByFavoriteLanguage(languageSearch)
+                    .stream()
+                    .map(employee -> {
+                        EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
+                        employeeDTO.setEmployeeUrl(getEmployeeUrl(employee.getId()));
 
-                    return employeeDTO;
-                }).collect(Collectors.toList());
+                        for (ProjectBaseDTO project : employeeDTO.getProjects())
+                            project.setProjectUrl(getProjectUrl(project.getTitle()));
+
+                        return employeeDTO;
+                    }).collect(Collectors.toList());
+        }
+        catch (IllegalArgumentException error) {
+            throw new RuntimeException("Wrong Language");
+        }
     }
 
     @Override
@@ -213,6 +220,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         });
 
         employee.getProjects().remove(foundProject);
+        employeeRepository.save(employee);
     }
 
     @Override

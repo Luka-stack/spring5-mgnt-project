@@ -97,7 +97,7 @@ public class ProjectServiceImplTest {
         when(projectRepository.findByStateOfProject(any())).thenReturn(projects);
 
         // when
-        List<ProjectDTO> projectDTOList = projectService.getProjectsByState(State.IN_PROGRESS);
+        List<ProjectDTO> projectDTOList = projectService.getProjectsByState("IN_PROGRESS");
 
         // then
         assertEquals(2, projectDTOList.size());

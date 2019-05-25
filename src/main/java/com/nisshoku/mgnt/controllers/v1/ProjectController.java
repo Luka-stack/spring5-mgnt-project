@@ -2,7 +2,6 @@ package com.nisshoku.mgnt.controllers.v1;
 
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectDTO;
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectListDTO;
-import com.nisshoku.mgnt.domain.State;
 import com.nisshoku.mgnt.services.ProjectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +32,7 @@ public class ProjectController {
 
     @GetMapping("/state/{state}")
     @ResponseStatus(HttpStatus.OK)
-    public ProjectListDTO getProjectsByState(@PathVariable State state) {
+    public ProjectListDTO getProjectsByState(@PathVariable String state) {
         return new ProjectListDTO(projectService.getProjectsByState(state));
     }
 
@@ -79,13 +78,13 @@ public class ProjectController {
         projectService.addEmployeeToProject(projectId, employeeId);
     }
 
-    @PostMapping("/{projectId}/delete_employee/{employeeId}")
+    @DeleteMapping("/{projectId}/delete_employee/{employeeId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteEmployeeFromProject(@PathVariable Integer projectId, @PathVariable Integer employeeId) {
         projectService.deleteEmployeeFromProject(projectId, employeeId);
     }
 
-    @PostMapping("{projectId}/clear_employees")
+    @DeleteMapping("{projectId}/clear_employees")
     @ResponseStatus(HttpStatus.OK)
     public void deleteAllEmployeesFromProject(@PathVariable Integer projectId) {
         projectService.deleteAllEmployeesFromProject(projectId);

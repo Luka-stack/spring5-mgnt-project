@@ -2,7 +2,6 @@ package com.nisshoku.mgnt.controllers.v1;
 
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeListDTO;
-import com.nisshoku.mgnt.domain.Language;
 import com.nisshoku.mgnt.services.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +32,7 @@ public class EmployeeController {
 
     @GetMapping("/lang/{language}")
     @ResponseStatus(HttpStatus.OK)
-    public EmployeeListDTO getEmployeesByLanguage(@PathVariable("language") Language language) {
+    public EmployeeListDTO getEmployeesByLanguage(@PathVariable String language) {
         return new EmployeeListDTO(employeeService.getEmployeesByLanguage(language));
     }
 
@@ -74,13 +73,13 @@ public class EmployeeController {
         employeeService.addProjectToEmployee(employeeId, projectId);
     }
 
-    @PostMapping("{employeeId}/delete_project/{projectId}")
+    @DeleteMapping("{employeeId}/delete_project/{projectId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteProjectFromEmployee(@PathVariable Integer employeeId, @PathVariable Integer projectId) {
         employeeService.deleteProjectFromEmployee(employeeId, projectId);
     }
 
-    @PostMapping("{employeeId}/clear_projects")
+    @DeleteMapping("{employeeId}/clear_projects")
     @ResponseStatus(HttpStatus.OK)
     public void deleteAllProjects(@PathVariable Integer employeeId) {
         employeeService.deleteAllProjectsFromEmployee(employeeId);

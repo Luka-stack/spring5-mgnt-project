@@ -11,7 +11,7 @@ public interface EmployeeService {
 
     List<EmployeeDTO> getAllEmployees();
 
-    List<EmployeeDTO> getEmployeesByLanguage(Language language);
+    List<EmployeeDTO> getEmployeesByLanguage(String language);
 
     List<EmployeeDTO> getEmployeesByLastName(String lastName);
 

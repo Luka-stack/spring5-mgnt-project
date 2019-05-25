@@ -92,7 +92,7 @@ public class EmployeeServiceImplTest {
         when(employeeRepository.findByFavoriteLanguage(any())).thenReturn(employees);
 
         // when
-        List<EmployeeDTO> returnedEmpoyee = employeeService.getEmployeesByLanguage(Language.GO);
+        List<EmployeeDTO> returnedEmpoyee = employeeService.getEmployeesByLanguage("go");
 
         //then
         assertEquals(2, returnedEmpoyee.size());

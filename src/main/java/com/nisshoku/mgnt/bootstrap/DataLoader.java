@@ -70,7 +70,7 @@ public class DataLoader implements CommandLineRunner {
         employeeRepository.save(newEmployee);
         projectRepository.save(newProject);
         projectRepository.save(newProject2);
-        taskRepository.save(newTask);
+//        taskRepository.save(newTask);
 
         Employee newEmployee2 = new Employee();
         newEmployee2.setFirstName("Ryuki");

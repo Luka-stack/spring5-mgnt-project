@@ -2,7 +2,6 @@ package com.nisshoku.mgnt.controllers.v1;
 
 import com.nisshoku.mgnt.api.v1.domain.task.TaskBaseDTO;
 import com.nisshoku.mgnt.api.v1.domain.task.TaskListDTO;
-import com.nisshoku.mgnt.domain.State;
 import com.nisshoku.mgnt.services.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

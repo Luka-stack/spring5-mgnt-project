@@ -3,9 +3,7 @@ package com.nisshoku.mgnt.services;
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectDTO;
 import com.nisshoku.mgnt.api.v1.mappers.ProjectMapper;
 import com.nisshoku.mgnt.bootstrap.DataLoader;
-import com.nisshoku.mgnt.domain.Project;
-import com.nisshoku.mgnt.domain.State;
-import com.nisshoku.mgnt.domain.Task;
+import com.nisshoku.mgnt.domain.*;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
 import com.nisshoku.mgnt.repositories.TaskRepository;
@@ -95,7 +93,7 @@ public class ProjectServiceImplIT {
         List<Project> beforeList = projectRepository.findAll();
         assertNotNull(beforeList);
 
-        projectRepository.deleteById(beforeList.get(0).getId());
+        projectService.deleteProjectById(beforeList.get(0).getId());
 
         List<Project> afterList = projectRepository.findAll();
         assertNotNull(afterList);
@@ -109,9 +107,17 @@ public class ProjectServiceImplIT {
         Project projectDB = getValidProject();
         assertNotNull(projectDB);
 
+        Employee employee = new Employee();
+        employee.setFirstName("FIRST NAME");
+        employee.setLastName("LAST NAME");
+        employee.setEmail("EMAIL@EMAIL.COM");
+        employee.setFavoriteLanguage(Language.GO);
+
+        Employee savedEmployee = employeeRepository.save(employee);
+
         int oldEmployeeSize = projectDB.getEmployees().size();
 
-        projectService.addEmployeeToProject(projectDB.getId(), 3);
+        projectService.addEmployeeToProject(projectDB.getId(), savedEmployee.getId());
 
         assertNotEquals(projectDB.getEmployees().size(), oldEmployeeSize);
         assertEquals(oldEmployeeSize + 1, projectDB.getEmployees().size());
@@ -123,9 +129,11 @@ public class ProjectServiceImplIT {
         Project projectDB = getValidProject();
         assertNotNull(projectDB);
 
+        Optional<Employee> employee = projectDB.getEmployees().stream().findAny();
+        Employee employeeFound = employee.get();
         int oldEmployeeSize = projectDB.getEmployees().size();
 
-        projectService.deleteEmployeeFromProject(projectDB.getId(), 1);
+        projectService.deleteEmployeeFromProject(projectDB.getId(), employeeFound.getId());
 
         assertEquals(oldEmployeeSize - 1, projectDB.getEmployees().size());
     }
@@ -147,26 +155,24 @@ public class ProjectServiceImplIT {
         Project projectDB = getValidProject();
         assertNotNull(projectDB);
 
-        projectService.deleteTaskFromProject(projectDB.getId(), 1);
+        Optional<Task> task = projectDB.getTasks().stream().findAny();
+        Task taskFound = task.get();
+        int oldEmployeeSize = projectDB.getEmployees().size();
 
-        assertEquals(0, projectDB.getTasks().size());
+        projectService.deleteTaskFromProject(projectDB.getId(), taskFound.getId());
+
+        assertEquals(oldEmployeeSize-1, projectDB.getTasks().size());
     }
-
 
     @Test
     public void deleteAllTasksFromProject() throws Exception {
 
-        Project projectDB = projectRepository.findById(1).get();
-        int projectsTasks = projectDB.getTasks().size();
-        List<Task> tasksBefore = taskRepository.findAll();
+        Project projectDB = getValidProject();
         assertNotNull(projectDB);
 
         projectService.deleteAllTasksFromProject(projectDB.getId());
 
-        List<Task> tasksAfter = taskRepository.findAll();
-
         assertEquals(0, projectDB.getTasks().size());
-        assertEquals(tasksBefore.size() - projectsTasks, tasksAfter.size());
     }
 
     private Project getValidProject() {
@@ -176,11 +182,11 @@ public class ProjectServiceImplIT {
         return projects.get(0);
     }
 
-/*    private Integer getValidId() {
+    private Integer getValidId() {
 
         List<Project> projects = projectRepository.findAll();
 
         return projects.get(0).getId();
-    }*/
+    }
 
 }

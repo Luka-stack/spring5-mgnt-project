@@ -62,16 +62,23 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectDTO> getProjectsByState(State state) {
+    public List<ProjectDTO> getProjectsByState(String state) {
 
-        return projectRepository.findByStateOfProject(state)
-                .stream()
-                .map(project -> {
-                    ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
-                    projectDTO.setProjectUrl(getProjectUrl(project.getId()));
+        try {
+            State stateSearch = State.valueOf(state.toUpperCase());
 
-                    return projectDTO;
-                }).collect(Collectors.toList());
+            return projectRepository.findByStateOfProject(stateSearch)
+                    .stream()
+                    .map(project -> {
+                        ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
+                        projectDTO.setProjectUrl(getProjectUrl(project.getId()));
+
+                        return projectDTO;
+                    }).collect(Collectors.toList());
+        }
+        catch (IllegalArgumentException error) {
+            throw new RuntimeException("Wrong State");
+        }
     }
 
     @Override

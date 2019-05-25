@@ -30,6 +30,6 @@ public class Task extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private State stateOfTask;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     private Project project;
 }
