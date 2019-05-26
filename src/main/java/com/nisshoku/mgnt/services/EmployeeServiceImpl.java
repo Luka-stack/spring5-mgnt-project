@@ -8,6 +8,7 @@ import com.nisshoku.mgnt.controllers.v1.ProjectController;
 import com.nisshoku.mgnt.domain.Employee;
 import com.nisshoku.mgnt.domain.Language;
 import com.nisshoku.mgnt.domain.Project;
+import com.nisshoku.mgnt.exceptions.ResourceNotFoundException;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
 import org.springframework.stereotype.Service;
@@ -51,17 +52,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeDTO getEmployeeById(Integer id) {
 
-        return employeeRepository.findById(id)
-                .map(employee -> {
-                    EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
-                    employeeDTO.setEmployeeUrl(getEmployeeUrl(employee.getId()));
+        Optional<Employee> optional = employeeRepository.findById(id);
 
-                    for (ProjectBaseDTO project : employeeDTO.getProjects())
-                        project.setProjectUrl(getProjectUrl(project.getTitle()));
+        if (!optional.isPresent())
+            throw new ResourceNotFoundException("Employee with id:"+id+" doesn't exist",
+                    EmployeeController.BASE_URL + "/{employee_id}");
 
-                    return employeeDTO;
-                })
-                .orElseThrow(RuntimeException::new);
+        EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(optional.get());
+
+        employeeDTO.setEmployeeUrl(getEmployeeUrl(id));
+        for (ProjectBaseDTO project : employeeDTO.getProjects())
+            project.setProjectUrl(getProjectUrl(project.getTitle()));
+
+        return employeeDTO;
     }
 
     @Override
