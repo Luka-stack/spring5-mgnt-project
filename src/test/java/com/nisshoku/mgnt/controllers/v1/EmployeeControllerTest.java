@@ -255,6 +255,17 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    public void patchEmployeeError() throws Exception {
+
+        when(employeeService.getEmployeesByLanguage(anyString())).thenThrow(RuntimeException.class);
+
+        mockMvc.perform(patch(EmployeeController.BASE_URL + "/1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
     public void deleteProjectById() throws Exception {
 
         mockMvc.perform(delete(EmployeeController.BASE_URL +  "/1")

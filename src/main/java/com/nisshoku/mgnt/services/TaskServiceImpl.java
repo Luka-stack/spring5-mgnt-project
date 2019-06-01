@@ -55,7 +55,7 @@ public class TaskServiceImpl implements TaskService {
                 .collect(Collectors.toList());
         }
         catch (IllegalArgumentException error) {
-            throw new RuntimeException("Wrong State");
+            throw new IllegalArgumentException("Task State: "+state + "does not exist in Database");
         }
     }
 

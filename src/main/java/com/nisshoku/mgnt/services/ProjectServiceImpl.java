@@ -81,7 +81,7 @@ public class ProjectServiceImpl implements ProjectService {
                     }).collect(Collectors.toList());
         }
         catch (IllegalArgumentException error) {
-            throw new RuntimeException("Wrong State");
+            throw new IllegalArgumentException("Project state: "+state +" does not exist Database");
         }
     }
 

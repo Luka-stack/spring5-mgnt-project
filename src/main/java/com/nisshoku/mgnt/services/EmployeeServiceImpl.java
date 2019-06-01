@@ -85,7 +85,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     }).collect(Collectors.toList());
         }
         catch (IllegalArgumentException error) {
-            throw new RuntimeException("Wrong Language");
+            throw new IllegalArgumentException("Favorite language: "+language+"does not exist in Database");
         }
     }
 

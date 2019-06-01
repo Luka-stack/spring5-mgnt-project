@@ -26,13 +26,9 @@ public class ApiErrorResponse {
             return new ApiErrorResponseBuilder();
         }
 
-        ApiErrorResponseBuilder withStatus() {
-            this.status = HttpStatus.NOT_FOUND;
-            return this;
-        }
-
-        ApiErrorResponseBuilder withErrorCode() {
-            this.errorCode = HttpStatus.NOT_FOUND.value();
+        ApiErrorResponseBuilder withStatus(HttpStatus status) {
+            this.status = status;
+            this.errorCode = status.value();
             return this;
         }
 
