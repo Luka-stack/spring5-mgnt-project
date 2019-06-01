@@ -3,6 +3,8 @@ package com.nisshoku.mgnt.controllers.v1;
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectBaseDTO;
 import com.nisshoku.mgnt.domain.Language;
+import com.nisshoku.mgnt.exceptions.ResourceNotFoundException;
+import com.nisshoku.mgnt.exceptions.RestResponseEntityExceptionHandler;
 import com.nisshoku.mgnt.services.EmployeeService;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +45,8 @@ public class EmployeeControllerTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(employeeController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(employeeController)
+                                 .setControllerAdvice(new RestResponseEntityExceptionHandler()).build();
     }
 
     @Test
@@ -128,6 +131,16 @@ public class EmployeeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName", equalTo(FIRSTNAME)))
                 .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)));
+    }
+
+    @Test
+    public void getEmployeeByIdNotFound() throws Exception {
+
+        when(employeeService.getEmployeeById(anyInt())).thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(get(EmployeeController.BASE_URL + "/1111")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test

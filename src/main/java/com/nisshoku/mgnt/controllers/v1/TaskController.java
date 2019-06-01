@@ -10,13 +10,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(TaskController.BASE_URL)
 public class TaskController {
 
-    static final String BASE_URL = "/api/v1/tasks";
+    public static final String BASE_URL = "/api/v1/tasks";
 
     private final TaskService taskService;
 
     public TaskController(TaskService taskService) {
         this.taskService = taskService;
     }
+
+    // Future Development: Add Get Task By Project
+
+    // TODO Add tests for exceptions
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
