@@ -95,6 +95,16 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    public void getEmployeesByLanguageError() throws Exception {
+
+        when(employeeService.getEmployeesByLanguage(anyString())).thenThrow(IllegalArgumentException.class);
+
+        mockMvc.perform(get(EmployeeController.BASE_URL + "/lang/qwe")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
     public void getEmployeesByLastName() throws Exception {
 
         EmployeeDTO employeeDTO = new EmployeeDTO();
@@ -253,17 +263,6 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$.projects", hasSize(1)))
                 .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
     }
-
-    @Test
-    public void patchEmployeeError() throws Exception {
-
-        when(employeeService.getEmployeesByLanguage(anyString())).thenThrow(RuntimeException.class);
-
-        mockMvc.perform(patch(EmployeeController.BASE_URL + "/1")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
 
     @Test
     public void deleteProjectById() throws Exception {
