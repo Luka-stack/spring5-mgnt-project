@@ -23,6 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -127,6 +128,13 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
 
     // 403
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(final Exception ex, final WebRequest request) {
+        final ApiError response = new ApiError(HttpStatus.FORBIDDEN, ex.getLocalizedMessage(),
+                ex.getMessage());
+
+        return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
+    }
 
     // 404
     @ExceptionHandler(value = {ResourceNotFoundException.class, EntityNotFoundException.class})
