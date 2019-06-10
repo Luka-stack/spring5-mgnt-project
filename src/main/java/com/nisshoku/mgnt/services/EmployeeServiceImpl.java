@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -116,17 +115,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         return returnedDTO;
     }
 
-    // TODO you know what you should do
     @Override
     public EmployeeDTO createNewEmployeeWithExistingProject(Integer id, EmployeeDTO employeeDTO) {
 
-        Optional<Project> projectDB = projectRepository.findById(id);
-        Employee employee = employeeMapper.employeeDTOToEmployee(employeeDTO);
+        Project projectDB = projectRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Project with id:"+ id +" doesn't exist",
+                        ProjectController.URL_BASE + "/project/{projectID}")
+        );
 
-        if (projectDB.isPresent()) {
-            Project project = projectDB.get();
-            employee.getProjects().add(project);
-        }
+        Employee employee = employeeMapper.employeeDTOToEmployee(employeeDTO);
+        employee.getProjects().add(projectDB);
 
         Employee savedEmployee = employeeRepository.save(employee);
         EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);

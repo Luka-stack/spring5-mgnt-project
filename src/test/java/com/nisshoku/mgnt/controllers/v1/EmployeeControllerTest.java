@@ -11,6 +11,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -22,8 +24,7 @@ import static com.nisshoku.mgnt.controllers.AbstractRestControllerTest.asJsonStr
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -205,6 +206,17 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$.projects", hasSize(1)))
                 .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
     }
+
+    /*@Test
+    public void createNewEmployeeWithExistingProjectNotFound() throws Exception {
+
+        when(employeeService.createNewEmployeeWithExistingProject(anyInt(), any())).thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(post(EmployeeController.BASE_URL + "/project/99")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }*/
 
     @Test
     public void updateEmployee() throws Exception {
