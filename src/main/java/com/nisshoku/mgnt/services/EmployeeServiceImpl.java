@@ -8,13 +8,13 @@ import com.nisshoku.mgnt.controllers.v1.ProjectController;
 import com.nisshoku.mgnt.domain.Employee;
 import com.nisshoku.mgnt.domain.Language;
 import com.nisshoku.mgnt.domain.Project;
+import com.nisshoku.mgnt.exceptions.ResourceNotFoundException;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,17 +51,18 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeDTO getEmployeeById(Integer id) {
 
-        return employeeRepository.findById(id)
-                .map(employee -> {
-                    EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
-                    employeeDTO.setEmployeeUrl(getEmployeeUrl(employee.getId()));
+        return employeeRepository.findById(id).map(employee -> {
 
-                    for (ProjectBaseDTO project : employeeDTO.getProjects())
-                        project.setProjectUrl(getProjectUrl(project.getTitle()));
+            EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
+            employeeDTO.setEmployeeUrl(getEmployeeUrl(id));
+            for (ProjectBaseDTO project : employeeDTO.getProjects())
+                project.setProjectUrl(getProjectUrl(project.getTitle()));
 
-                    return employeeDTO;
-                })
-                .orElseThrow(RuntimeException::new);
+            return employeeDTO;
+        }).orElseThrow(() ->
+                new ResourceNotFoundException("Employee with id:"+id+" doesn't exist",
+                EmployeeController.BASE_URL + "/{employee_id}")
+        );
     }
 
     @Override
@@ -83,7 +84,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     }).collect(Collectors.toList());
         }
         catch (IllegalArgumentException error) {
-            throw new RuntimeException("Wrong Language");
+            throw new IllegalArgumentException("Favorite language: "+language+"does not exist in Database");
         }
     }
 
@@ -117,13 +118,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeDTO createNewEmployeeWithExistingProject(Integer id, EmployeeDTO employeeDTO) {
 
-        Optional<Project> projectDB = projectRepository.findById(id);
-        Employee employee = employeeMapper.employeeDTOToEmployee(employeeDTO);
+        Project projectDB = projectRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Project with id:"+ id +" doesn't exist",
+                        ProjectController.URL_BASE + "/project/{projectID}")
+        );
 
-        if (projectDB.isPresent()) {
-            Project project = projectDB.get();
-            employee.getProjects().add(project);
-        }
+        Employee employee = employeeMapper.employeeDTOToEmployee(employeeDTO);
+        employee.getProjects().add(projectDB);
 
         Employee savedEmployee = employeeRepository.save(employee);
         EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
@@ -189,14 +190,23 @@ public class EmployeeServiceImpl implements EmployeeService {
             returnedDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
 
             return returnedDTO;
-        }).orElseThrow(RuntimeException::new);
+        }).orElseThrow(() ->
+                new ResourceNotFoundException("Employee with id:"+id+" doesn't exist",
+                                               EmployeeController.BASE_URL + "/{employee_id}")
+        );
     }
 
     @Override
     public void addProjectToEmployee(Integer employeeId, Integer projectId) {
 
-        Employee employee = employeeRepository.findById(employeeId).orElseThrow(RuntimeException::new);
-        Project foundProject = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() ->
+                        new ResourceNotFoundException("Employee with id:"+ employeeId +" doesn't exist",
+                                EmployeeController.BASE_URL + "{employeeId}/add_project/{projectId}")
+                );
+        Project foundProject = projectRepository.findById(projectId).orElseThrow(() ->
+                        new ResourceNotFoundException("Project with id:"+ projectId +" doesn't exist",
+                            EmployeeController.BASE_URL + "{employeeId}/add_project/{projectId}")
+                );
 
         employee.getProjects().add(foundProject);
         foundProject.getEmployees().add(employee);
@@ -208,8 +218,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void deleteProjectFromEmployee(Integer employeeId, Integer projectId) {
 
-        Employee employee = employeeRepository.findById(employeeId).orElseThrow(RuntimeException::new);
-        Project foundProject = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() ->
+                new ResourceNotFoundException("Employee with id:"+ employeeId +" doesn't exist",
+                        EmployeeController.BASE_URL + "{employeeId}/delete_project/{projectId}")
+        );
+        Project foundProject = projectRepository.findById(projectId).orElseThrow(() ->
+                new ResourceNotFoundException("Project with id:"+ projectId +" doesn't exist",
+                        EmployeeController.BASE_URL + "{employeeId}/delete_project/{projectId}")
+        );
 
         employee.getProjects().forEach(project -> {
 
@@ -226,7 +242,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void deleteAllProjectsFromEmployee(Integer employeeId) {
 
-        Employee employee = employeeRepository.findById(employeeId).orElseThrow(RuntimeException::new);
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() ->
+                new ResourceNotFoundException("Employee with id:"+ employeeId +" doesn't exist",
+                        EmployeeController.BASE_URL + "{employeeId}/clear_projects")
+        );
 
         employee.getProjects().forEach(project -> {
             project.getEmployees().remove(employee);
@@ -242,6 +261,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.deleteById(id);
     }
 
+    // TODO you know what you should do
     private String getProjectUrl(String title) {
         return ProjectController.URL_BASE + "/" + title.toLowerCase();
     }

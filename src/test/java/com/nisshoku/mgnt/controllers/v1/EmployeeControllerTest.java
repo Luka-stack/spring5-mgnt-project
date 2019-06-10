@@ -3,12 +3,16 @@ package com.nisshoku.mgnt.controllers.v1;
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectBaseDTO;
 import com.nisshoku.mgnt.domain.Language;
+import com.nisshoku.mgnt.exceptions.ResourceNotFoundException;
+import com.nisshoku.mgnt.exceptions.RestResponseEntityExceptionHandler;
 import com.nisshoku.mgnt.services.EmployeeService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -20,8 +24,7 @@ import static com.nisshoku.mgnt.controllers.AbstractRestControllerTest.asJsonStr
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -43,7 +46,8 @@ public class EmployeeControllerTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(employeeController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(employeeController)
+                                 .setControllerAdvice(new RestResponseEntityExceptionHandler()).build();
     }
 
     @Test
@@ -92,6 +96,16 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    public void getEmployeesByLanguageError() throws Exception {
+
+        when(employeeService.getEmployeesByLanguage(anyString())).thenThrow(IllegalArgumentException.class);
+
+        mockMvc.perform(get(EmployeeController.BASE_URL + "/lang/qwe")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
     public void getEmployeesByLastName() throws Exception {
 
         EmployeeDTO employeeDTO = new EmployeeDTO();
@@ -128,6 +142,16 @@ public class EmployeeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName", equalTo(FIRSTNAME)))
                 .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)));
+    }
+
+    @Test
+    public void getEmployeeByIdNotFound() throws Exception {
+
+        when(employeeService.getEmployeeById(anyInt())).thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(get(EmployeeController.BASE_URL + "/1111")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -182,6 +206,17 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$.projects", hasSize(1)))
                 .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
     }
+
+    /*@Test
+    public void createNewEmployeeWithExistingProjectNotFound() throws Exception {
+
+        when(employeeService.createNewEmployeeWithExistingProject(anyInt(), any())).thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(post(EmployeeController.BASE_URL + "/project/99")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }*/
 
     @Test
     public void updateEmployee() throws Exception {

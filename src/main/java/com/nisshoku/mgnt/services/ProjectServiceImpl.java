@@ -7,6 +7,7 @@ import com.nisshoku.mgnt.domain.Employee;
 import com.nisshoku.mgnt.domain.Project;
 import com.nisshoku.mgnt.domain.State;
 import com.nisshoku.mgnt.domain.Task;
+import com.nisshoku.mgnt.exceptions.ResourceNotFoundException;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
 import com.nisshoku.mgnt.repositories.TaskRepository;
@@ -58,7 +59,10 @@ public class ProjectServiceImpl implements ProjectService {
                     projectDTO.setProjectUrl(getProjectUrl(project.getId()));
 
                     return projectDTO;
-                }).orElseThrow(RuntimeException::new);
+                }).orElseThrow(() ->
+                        new ResourceNotFoundException("Project with id:"+id+" doesn't exist",
+                                                      ProjectController.URL_BASE + "/{project_id}")
+                );
     }
 
     @Override
@@ -77,10 +81,11 @@ public class ProjectServiceImpl implements ProjectService {
                     }).collect(Collectors.toList());
         }
         catch (IllegalArgumentException error) {
-            throw new RuntimeException("Wrong State");
+            throw new IllegalArgumentException("Project state: "+state +" does not exist Database");
         }
     }
 
+    // TODO do something with this date
     @Override
     public List<ProjectDTO> getProjectsByYear(String year) {
 
@@ -116,7 +121,10 @@ public class ProjectServiceImpl implements ProjectService {
                     projectDTO.setProjectUrl(getProjectUrl(project.getId()));
 
                     return projectDTO;
-                }).orElseThrow(RuntimeException::new);
+                }).orElseThrow(() ->
+                        new ResourceNotFoundException("Project with title:"+title+" doesn't exist",
+                                                      ProjectController.URL_BASE + "/title/{title}")
+                );
     }
 
     @Override
@@ -145,36 +153,40 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectDTO patchProject(Integer id, ProjectDTO projectDTO) {
 
-        Project project = projectRepository.findById(id).orElseThrow(RuntimeException::new);
+        return projectRepository.findById(id).map(project -> {
 
-        if (projectDTO.getTitle() != null) {
-            project.setTitle(projectDTO.getTitle());
-        }
+            if (projectDTO.getTitle() != null) {
+                project.setTitle(projectDTO.getTitle());
+            }
 
-        if (projectDTO.getDescription() != null) {
-            project.setDescription(projectDTO.getDescription());
-        }
+            if (projectDTO.getDescription() != null) {
+                project.setDescription(projectDTO.getDescription());
+            }
 
-        if (projectDTO.getStateOfProject() != null) {
-            project.setStateOfProject(projectDTO.getStateOfProject());
-        }
+            if (projectDTO.getStateOfProject() != null) {
+                project.setStateOfProject(projectDTO.getStateOfProject());
+            }
 
-        if (projectDTO.getStartDate() != null) {
-            project.setStartDate(projectDTO.getStartDate());
-        }
+            if (projectDTO.getStartDate() != null) {
+                project.setStartDate(projectDTO.getStartDate());
+            }
 
-        if (projectDTO.getEndDate() != null) {
-            project.setEndDate(projectDTO.getEndDate());
-        }
+            if (projectDTO.getEndDate() != null) {
+                project.setEndDate(projectDTO.getEndDate());
+            }
 
-        if (projectDTO.getCost() != null) {
-            project.setCost(projectDTO.getCost());
-        }
+            if (projectDTO.getCost() != null) {
+                project.setCost(projectDTO.getCost());
+            }
 
-        ProjectDTO savedDTO = projectMapper.projectToProjectDTO(projectRepository.save(project));
-        savedDTO.setProjectUrl(getProjectUrl(id));
+            ProjectDTO savedDTO = projectMapper.projectToProjectDTO(projectRepository.save(project));
+            savedDTO.setProjectUrl(getProjectUrl(id));
 
-        return savedDTO;
+            return savedDTO;
+        }).orElseThrow(() ->
+                new ResourceNotFoundException("Project with id:"+id+" doesn't exist",
+                        ProjectController.URL_BASE + "/{projectId}")
+        );
     }
 
     @Override
@@ -185,8 +197,15 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void addEmployeeToProject(Integer projectId, Integer employeeId) {
 
-        Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
-        Employee employee = employeeRepository.findById(employeeId).orElseThrow(RuntimeException::new);
+        Project project = projectRepository.findById(projectId).orElseThrow(() ->
+                new ResourceNotFoundException("Project with id:"+ projectId +" doesn't exist",
+                        ProjectController.URL_BASE + "/{projectId}/add_employee/{employeeId}")
+        );
+
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() ->
+                new ResourceNotFoundException("Employee with id:"+ employeeId +" doesn't exist",
+                        ProjectController.URL_BASE + "/{projectId}/add_employee/{employeeId}")
+        );
 
         project.getEmployees().add(employee);
         employee.getProjects().add(project);
@@ -198,8 +217,15 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void deleteEmployeeFromProject(Integer projectId, Integer employeeId) {
 
-        Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
-        Employee employee = employeeRepository.findById(employeeId).orElseThrow(RuntimeException::new);
+        Project project = projectRepository.findById(projectId).orElseThrow(() ->
+                new ResourceNotFoundException("Project with id:"+ projectId +" doesn't exist",
+                        ProjectController.URL_BASE + "/{projectId}/delete_employee/{employeeId}")
+        );
+
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() ->
+                new ResourceNotFoundException("Employee with id:"+ employeeId +" doesn't exist",
+                        ProjectController.URL_BASE + "/{projectId}/delete_employee/{employeeId}")
+        );
 
         project.getEmployees().remove(employee);
         employee.getProjects().remove(project);
@@ -211,7 +237,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void deleteAllEmployeesFromProject(Integer projectId) {
 
-        Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+        Project project = projectRepository.findById(projectId).orElseThrow(() ->
+                new ResourceNotFoundException("Project with id:"+ projectId +" doesn't exist",
+                        ProjectController.URL_BASE + "/{projectId}/clear_employees")
+        );
 
         project.getEmployees().forEach(employee -> {
             employee.getProjects().remove(project);
@@ -225,13 +254,16 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void deleteTaskFromProject(Integer projectId, Integer taskId) {
 
-        Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+        Project project = projectRepository.findById(projectId).orElseThrow(() ->
+                new ResourceNotFoundException("Project with id:"+ projectId +" doesn't exist",
+                        ProjectController.URL_BASE + "/{projectId}/delete_task/{taskId}")
+        );
 
         for (Task task : project.getTasks()) {
             if (task.getId().equals(taskId)) {
                 project.getTasks().remove(task);
                 taskRepository.deleteById(task.getId());
-                break;
+                return;
             }
         }
     }
@@ -239,7 +271,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void deleteAllTasksFromProject(Integer projectId) {
 
-        Project project = projectRepository.findById(projectId).orElseThrow(RuntimeException::new);
+        Project project = projectRepository.findById(projectId).orElseThrow(() ->
+                new ResourceNotFoundException("Project with id:"+ projectId +" doesn't exist",
+                        ProjectController.URL_BASE + "/{projectId}/clear_tasks")
+        );
 
         project.getTasks().forEach(task -> {
             project.getTasks().remove(task);
