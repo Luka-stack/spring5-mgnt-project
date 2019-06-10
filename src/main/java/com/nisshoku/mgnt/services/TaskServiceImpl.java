@@ -32,8 +32,6 @@ public class TaskServiceImpl implements TaskService {
         this.taskMapper = taskMapper;
     }
 
-    //TODO What with return
-
     @Override
     public List<TaskBaseDTO> getAllTasks() {
 

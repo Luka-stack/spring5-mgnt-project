@@ -12,6 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class ProjectBaseDTO {
 
+    // TODO Think about adding ID to DTO for easy access in Controller
     private String title;
     private String description;
     private State stateOfProject;

@@ -85,7 +85,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    // TODO do something with this date
     @Override
     public List<ProjectDTO> getProjectsByYear(String year) {
 
@@ -188,6 +187,8 @@ public class ProjectServiceImpl implements ProjectService {
                         ProjectController.URL_BASE + "/{projectId}")
         );
     }
+
+    // TODO Think about return type for these function below
 
     @Override
     public void deleteProjectById(Integer id) {

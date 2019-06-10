@@ -196,6 +196,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         );
     }
 
+    // TODO Think about return type for these function below
+
     @Override
     public void addProjectToEmployee(Integer employeeId, Integer projectId) {
 
