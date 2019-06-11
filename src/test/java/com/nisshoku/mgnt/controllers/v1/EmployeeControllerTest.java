@@ -11,8 +11,6 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -207,16 +205,22 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
     }
 
-    /*@Test
+    @Test
     public void createNewEmployeeWithExistingProjectNotFound() throws Exception {
 
-        when(employeeService.createNewEmployeeWithExistingProject(anyInt(), any())).thenThrow(ResourceNotFoundException.class);
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
 
-        mockMvc.perform(post(EmployeeController.BASE_URL + "/project/99")
+        when(employeeService.createNewEmployeeWithExistingProject(anyInt(), any()))
+                .thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(post(EmployeeController.BASE_URL + "/project/1")
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(employeeDTO)))
                 .andExpect(status().isNotFound());
-    }*/
+    }
 
     @Test
     public void updateEmployee() throws Exception {
@@ -277,7 +281,25 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void deleteProjectById() throws Exception {
+    public void patchEmployeeNotFound() throws Exception {
+
+        ProjectBaseDTO project = new ProjectBaseDTO();
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.getProjects().add(project);
+
+        when(employeeService.patchEmployee(anyInt(), any(EmployeeDTO.class))).thenThrow(new ResourceNotFoundException());
+
+        mockMvc.perform(patch(EmployeeController.BASE_URL + "/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(employeeDTO)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteEmployeeById() throws Exception {
 
         mockMvc.perform(delete(EmployeeController.BASE_URL +  "/1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -289,30 +311,138 @@ public class EmployeeControllerTest {
     @Test
     public void addProjectToEmployee() throws Exception {
 
-        mockMvc.perform(post(EmployeeController.BASE_URL +  "/1/add_project/1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
 
-        verify(employeeService).addProjectToEmployee(anyInt(), anyInt());
+        ProjectBaseDTO projectBaseDTO = new ProjectBaseDTO();
+
+        EmployeeDTO returnedDTO = new EmployeeDTO();
+        returnedDTO.setFirstName(FIRSTNAME);
+        returnedDTO.setLastName(LASTNAME);
+        returnedDTO.getProjects().add(projectBaseDTO);
+        returnedDTO.setEmployeeUrl(EmployeeController.BASE_URL + "/1");
+
+        when(employeeService.addProjectToEmployee(anyInt(), anyInt())).thenReturn(returnedDTO);
+
+        mockMvc.perform(put(EmployeeController.BASE_URL + "/1/add_project/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(employeeDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", equalTo(FIRSTNAME)))
+                .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)))
+                .andExpect(jsonPath("$.projects", hasSize(1)))
+                .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
+    }
+
+    @Test
+    public void addProjectToEmployeeNotFound() throws Exception {
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
+
+        when(employeeService.addProjectToEmployee(anyInt(), anyInt())).thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(put(EmployeeController.BASE_URL + "/1/add_project/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(employeeDTO)))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     public void deleteProjectFromEmployee() throws Exception {
 
-        mockMvc.perform(delete(EmployeeController.BASE_URL +  "/1/delete_project/1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        ProjectBaseDTO projectBaseDTO = new ProjectBaseDTO();
 
-        verify(employeeService).deleteProjectFromEmployee(anyInt(), anyInt());
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
+        employeeDTO.getProjects().add(projectBaseDTO);
+
+        EmployeeDTO returnedDTO = new EmployeeDTO();
+        returnedDTO.setFirstName(FIRSTNAME);
+        returnedDTO.setLastName(LASTNAME);
+        returnedDTO.setEmployeeUrl(EmployeeController.BASE_URL + "/1");
+
+        when(employeeService.deleteProjectFromEmployee(anyInt(), anyInt())).thenReturn(returnedDTO);
+
+        mockMvc.perform(put(EmployeeController.BASE_URL + "/1/delete_project/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(employeeDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", equalTo(FIRSTNAME)))
+                .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)))
+                .andExpect(jsonPath("$.projects", hasSize(0)))
+                .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
+    }
+
+    @Test
+    public void deleteProjectFromEmployeeNotFound() throws Exception {
+
+        ProjectBaseDTO projectBaseDTO = new ProjectBaseDTO();
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
+        employeeDTO.getProjects().add(projectBaseDTO);
+
+        when(employeeService.deleteProjectFromEmployee(anyInt(), anyInt())).thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(put(EmployeeController.BASE_URL + "/1/delete_project/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(employeeDTO)))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     public void deleteAllProjects() throws Exception {
 
-        mockMvc.perform(delete(EmployeeController.BASE_URL +  "/1/clear_projects")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        ProjectBaseDTO projectBaseDTO = new ProjectBaseDTO();
 
-        verify(employeeService).deleteAllProjectsFromEmployee(anyInt());
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
+        employeeDTO.getProjects().add(projectBaseDTO);
+
+        EmployeeDTO returnedDTO = new EmployeeDTO();
+        returnedDTO.setFirstName(FIRSTNAME);
+        returnedDTO.setLastName(LASTNAME);
+        returnedDTO.setEmployeeUrl(EmployeeController.BASE_URL + "/1");
+
+        when(employeeService.deleteAllProjectsFromEmployee(anyInt())).thenReturn(returnedDTO);
+
+        mockMvc.perform(put(EmployeeController.BASE_URL + "/1/clear_projects")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(employeeDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", equalTo(FIRSTNAME)))
+                .andExpect(jsonPath("$.lastName", equalTo(LASTNAME)))
+                .andExpect(jsonPath("$.projects", hasSize(0)))
+                .andExpect(jsonPath("$.employeeUrl", equalTo(EmployeeController.BASE_URL + "/1")));
+    }
+
+    @Test
+    public void deleteAllProjectsNotFound() throws Exception {
+
+        ProjectBaseDTO projectBaseDTO = new ProjectBaseDTO();
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setFirstName(FIRSTNAME);
+        employeeDTO.setLastName(LASTNAME);
+        employeeDTO.getProjects().add(projectBaseDTO);
+
+        when(employeeService.deleteAllProjectsFromEmployee(anyInt())).thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(put(EmployeeController.BASE_URL + "/1/clear_projects")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(employeeDTO)))
+                .andExpect(status().isNotFound());
     }
 }
