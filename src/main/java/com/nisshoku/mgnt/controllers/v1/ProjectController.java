@@ -18,8 +18,6 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-    // TODO Add tests for exceptions
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public ProjectListDTO getAllProjects() {

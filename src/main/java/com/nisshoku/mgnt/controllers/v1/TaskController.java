@@ -20,8 +20,6 @@ public class TaskController {
 
     // Future Development: Add Get Task By Project
 
-    // TODO Add tests for exceptions
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public TaskListDTO getAllTasks() {

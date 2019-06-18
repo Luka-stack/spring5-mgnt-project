@@ -18,8 +18,6 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    // TODO Add tests for exceptions
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public EmployeeListDTO getAllEmployees() {
