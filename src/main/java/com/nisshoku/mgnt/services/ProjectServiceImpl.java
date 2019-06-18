@@ -188,15 +188,13 @@ public class ProjectServiceImpl implements ProjectService {
         );
     }
 
-    // TODO Think about return type for these function below
-
     @Override
     public void deleteProjectById(Integer id) {
         projectRepository.deleteById(id);
     }
 
     @Override
-    public void addEmployeeToProject(Integer projectId, Integer employeeId) {
+    public ProjectDTO addEmployeeToProject(Integer projectId, Integer employeeId) {
 
         Project project = projectRepository.findById(projectId).orElseThrow(() ->
                 new ResourceNotFoundException("Project with id:"+ projectId +" doesn't exist",
@@ -211,12 +209,16 @@ public class ProjectServiceImpl implements ProjectService {
         project.getEmployees().add(employee);
         employee.getProjects().add(project);
 
-        projectRepository.save(project);
         employeeRepository.save(employee);
+        ProjectDTO projectDTO = projectMapper.projectToProjectDTO(projectRepository.save(project));
+        projectDTO.setProjectUrl(getProjectUrl(projectId));
+        //projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
+
+        return projectDTO;
     }
 
     @Override
-    public void deleteEmployeeFromProject(Integer projectId, Integer employeeId) {
+    public ProjectDTO deleteEmployeeFromProject(Integer projectId, Integer employeeId) {
 
         Project project = projectRepository.findById(projectId).orElseThrow(() ->
                 new ResourceNotFoundException("Project with id:"+ projectId +" doesn't exist",
@@ -231,12 +233,16 @@ public class ProjectServiceImpl implements ProjectService {
         project.getEmployees().remove(employee);
         employee.getProjects().remove(project);
 
-        projectRepository.save(project);
         employeeRepository.save(employee);
+        ProjectDTO projectDTO = projectMapper.projectToProjectDTO(projectRepository.save(project));
+        projectDTO.setProjectUrl(getProjectUrl(projectId));
+        //projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
+
+        return projectDTO;
     }
 
     @Override
-    public void deleteAllEmployeesFromProject(Integer projectId) {
+    public ProjectDTO deleteAllEmployeesFromProject(Integer projectId) {
 
         Project project = projectRepository.findById(projectId).orElseThrow(() ->
                 new ResourceNotFoundException("Project with id:"+ projectId +" doesn't exist",
@@ -249,11 +255,15 @@ public class ProjectServiceImpl implements ProjectService {
         });
 
         project.setEmployees(new HashSet<>());
-        projectRepository.save(project);
+        ProjectDTO projectDTO = projectMapper.projectToProjectDTO(projectRepository.save(project));
+        projectDTO.setProjectUrl(getProjectUrl(projectId));
+        //projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
+
+        return projectDTO;
     }
 
     @Override
-    public void deleteTaskFromProject(Integer projectId, Integer taskId) {
+    public ProjectDTO deleteTaskFromProject(Integer projectId, Integer taskId) {
 
         Project project = projectRepository.findById(projectId).orElseThrow(() ->
                 new ResourceNotFoundException("Project with id:"+ projectId +" doesn't exist",
@@ -264,13 +274,19 @@ public class ProjectServiceImpl implements ProjectService {
             if (task.getId().equals(taskId)) {
                 project.getTasks().remove(task);
                 taskRepository.deleteById(task.getId());
-                return;
+                break;
             }
         }
+
+        ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
+        projectDTO.setProjectUrl(getProjectUrl(projectId));
+        //projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
+
+        return projectDTO;
     }
 
     @Override
-    public void deleteAllTasksFromProject(Integer projectId) {
+    public ProjectDTO deleteAllTasksFromProject(Integer projectId) {
 
         Project project = projectRepository.findById(projectId).orElseThrow(() ->
                 new ResourceNotFoundException("Project with id:"+ projectId +" doesn't exist",
@@ -281,6 +297,12 @@ public class ProjectServiceImpl implements ProjectService {
             project.getTasks().remove(task);
             taskRepository.deleteById(task.getId());
         });
+
+        ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
+        projectDTO.setProjectUrl(getProjectUrl(projectId));
+        //projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
+
+        return projectDTO;
     }
 
     private String getProjectUrl(Integer id) {

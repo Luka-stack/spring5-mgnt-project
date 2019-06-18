@@ -182,11 +182,4 @@ public class ProjectServiceImplIT {
         return projects.get(0);
     }
 
-    private Integer getValidId() {
-
-        List<Project> projects = projectRepository.findAll();
-
-        return projects.get(0).getId();
-    }
-
 }

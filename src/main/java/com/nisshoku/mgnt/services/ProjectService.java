@@ -24,13 +24,13 @@ public interface ProjectService {
 
     void deleteProjectById(Integer id);
 
-    void addEmployeeToProject(Integer projectId, Integer employeeId);
+    ProjectDTO addEmployeeToProject(Integer projectId, Integer employeeId);
 
-    void deleteEmployeeFromProject(Integer projectId, Integer employeeId);
+    ProjectDTO deleteEmployeeFromProject(Integer projectId, Integer employeeId);
 
-    void deleteAllEmployeesFromProject(Integer projectId);
+    ProjectDTO deleteAllEmployeesFromProject(Integer projectId);
 
-    void deleteTaskFromProject(Integer projectId, Integer taskId);
+    ProjectDTO deleteTaskFromProject(Integer projectId, Integer taskId);
 
-    void deleteAllTasksFromProject(Integer projectId);
+    ProjectDTO deleteAllTasksFromProject(Integer projectId);
 }
