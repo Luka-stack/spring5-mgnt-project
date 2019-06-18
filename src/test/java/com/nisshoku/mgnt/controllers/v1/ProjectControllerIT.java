@@ -166,8 +166,6 @@ public class ProjectControllerIT {
         verify(projectService).deleteProjectById(anyInt());
     }
 
-    //TODO DO I NEED NOTFOUND?
-
     @Test
     public void deleteProjectById_isUnauthorized() throws Exception {
 
