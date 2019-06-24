@@ -120,7 +120,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Project projectDB = projectRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Project with id:"+ id +" doesn't exist",
-                        ProjectController.URL_BASE + "/project/{projectID}")
+                        EmployeeController.BASE_URL + "/project/{projectID}")
         );
 
         Employee employee = employeeMapper.employeeDTOToEmployee(employeeDTO);
@@ -196,10 +196,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         );
     }
 
-    // TODO Think about return type for these function below
-
     @Override
-    public void addProjectToEmployee(Integer employeeId, Integer projectId) {
+    public EmployeeDTO addProjectToEmployee(Integer employeeId, Integer projectId) {
 
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(() ->
                         new ResourceNotFoundException("Employee with id:"+ employeeId +" doesn't exist",
@@ -214,11 +212,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         foundProject.getEmployees().add(employee);
 
         projectRepository.save(foundProject);
-        employeeRepository.save(employee);
+        EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employeeRepository.save(employee));
+        employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeId));
+        employeeDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
+
+        return employeeDTO;
     }
 
     @Override
-    public void deleteProjectFromEmployee(Integer employeeId, Integer projectId) {
+    public EmployeeDTO deleteProjectFromEmployee(Integer employeeId, Integer projectId) {
 
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(() ->
                 new ResourceNotFoundException("Employee with id:"+ employeeId +" doesn't exist",
@@ -238,11 +240,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         });
 
         employee.getProjects().remove(foundProject);
-        employeeRepository.save(employee);
+        EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employeeRepository.save(employee));
+        employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeId));
+        employeeDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
+
+        return employeeDTO;
     }
 
     @Override
-    public void deleteAllProjectsFromEmployee(Integer employeeId) {
+    public EmployeeDTO deleteAllProjectsFromEmployee(Integer employeeId) {
 
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(() ->
                 new ResourceNotFoundException("Employee with id:"+ employeeId +" doesn't exist",
@@ -255,6 +261,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         });
 
         employee.setProjects(new HashSet<>());
+
+        EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
+        employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeId));
+        employeeDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
+
+        return employeeDTO;
     }
 
     @Override

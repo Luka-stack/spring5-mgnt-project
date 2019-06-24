@@ -18,8 +18,6 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-    // TODO Add tests for exceptions
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public ProjectListDTO getAllProjects() {
@@ -74,34 +72,34 @@ public class ProjectController {
         projectService.deleteProjectById(id);
     }
 
-    @PostMapping("/{projectId}/add_employee/{employeeId}")
+    @PutMapping("/{projectId}/add_employee/{employeeId}")
     @ResponseStatus(HttpStatus.OK)
-    public void addEmployeeToProject(@PathVariable Integer projectId, @PathVariable Integer employeeId) {
-        projectService.addEmployeeToProject(projectId, employeeId);
+    public ProjectDTO addEmployeeToProject(@PathVariable Integer projectId, @PathVariable Integer employeeId) {
+        return projectService.addEmployeeToProject(projectId, employeeId);
     }
 
-    @DeleteMapping("/{projectId}/delete_employee/{employeeId}")
+    @PutMapping("/{projectId}/delete_employee/{employeeId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteEmployeeFromProject(@PathVariable Integer projectId, @PathVariable Integer employeeId) {
-        projectService.deleteEmployeeFromProject(projectId, employeeId);
+    public ProjectDTO deleteEmployeeFromProject(@PathVariable Integer projectId, @PathVariable Integer employeeId) {
+        return projectService.deleteEmployeeFromProject(projectId, employeeId);
     }
 
-    @DeleteMapping("{projectId}/clear_employees")
+    @PutMapping("{projectId}/clear_employees")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteAllEmployeesFromProject(@PathVariable Integer projectId) {
-        projectService.deleteAllEmployeesFromProject(projectId);
+    public ProjectDTO deleteAllEmployeesFromProject(@PathVariable Integer projectId) {
+        return projectService.deleteAllEmployeesFromProject(projectId);
     }
 
-    @DeleteMapping("/{projectId}/delete_task/{taskId}")
+    @PutMapping("/{projectId}/delete_task/{taskId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteTaskFromProject(@PathVariable Integer projectId, @PathVariable Integer taskId) {
-        projectService.deleteTaskFromProject(projectId, taskId);
+    public ProjectDTO deleteTaskFromProject(@PathVariable Integer projectId, @PathVariable Integer taskId) {
+        return projectService.deleteTaskFromProject(projectId, taskId);
     }
 
-    @DeleteMapping("/{projectId}/clear_tasks")
+    @PutMapping("/{projectId}/clear_tasks")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteAllTasksFromProject(@PathVariable Integer projectId) {
-        projectService.deleteAllTasksFromProject(projectId);
+    public ProjectDTO deleteAllTasksFromProject(@PathVariable Integer projectId) {
+        return projectService.deleteAllTasksFromProject(projectId);
     }
 
 }

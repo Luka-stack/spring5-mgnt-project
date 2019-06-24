@@ -18,8 +18,6 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    // TODO Add tests for exceptions
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public EmployeeListDTO getAllEmployees() {
@@ -69,22 +67,22 @@ public class EmployeeController {
         return employeeService.patchEmployee(id, employeeDTO);
     }
 
-    @PostMapping("{employeeId}/add_project/{projectId}")
+    @PutMapping("{employeeId}/add_project/{projectId}")
     @ResponseStatus(HttpStatus.OK)
-    public void addProjectToEmployee(@PathVariable Integer employeeId, @PathVariable Integer projectId) {
-        employeeService.addProjectToEmployee(employeeId, projectId);
+    public EmployeeDTO addProjectToEmployee(@PathVariable Integer employeeId, @PathVariable Integer projectId) {
+        return employeeService.addProjectToEmployee(employeeId, projectId);
     }
 
-    @DeleteMapping("{employeeId}/delete_project/{projectId}")
+    @PutMapping("{employeeId}/delete_project/{projectId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteProjectFromEmployee(@PathVariable Integer employeeId, @PathVariable Integer projectId) {
-        employeeService.deleteProjectFromEmployee(employeeId, projectId);
+    public EmployeeDTO deleteProjectFromEmployee(@PathVariable Integer employeeId, @PathVariable Integer projectId) {
+        return employeeService.deleteProjectFromEmployee(employeeId, projectId);
     }
 
-    @DeleteMapping("{employeeId}/clear_projects")
+    @PutMapping("{employeeId}/clear_projects")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteAllProjects(@PathVariable Integer employeeId) {
-        employeeService.deleteAllProjectsFromEmployee(employeeId);
+    public EmployeeDTO deleteAllProjects(@PathVariable Integer employeeId) {
+        return employeeService.deleteAllProjectsFromEmployee(employeeId);
     }
 
     @DeleteMapping("/{id}")

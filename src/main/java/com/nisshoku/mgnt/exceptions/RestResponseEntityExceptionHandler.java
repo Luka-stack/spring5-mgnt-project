@@ -48,8 +48,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         }
 
         final ApiError response = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
-        return handleExceptionInternal(ex, response, httpHeaders, response.getStatus(), request);
-        //return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
+        //return handleExceptionInternal(ex, response, httpHeaders, response.getStatus(), request);
+        return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
     }
 
     @Override
@@ -67,8 +67,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         }
 
         final ApiError response = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
-        return handleExceptionInternal(ex, response, httpHeaders, response.getStatus(), request);
-        //return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
+        //return handleExceptionInternal(ex, response, httpHeaders, response.getStatus(), request);
+        return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
     }
 
     @Override

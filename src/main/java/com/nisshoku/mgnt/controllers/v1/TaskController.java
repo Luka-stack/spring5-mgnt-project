@@ -6,6 +6,8 @@ import com.nisshoku.mgnt.services.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(TaskController.BASE_URL)
 public class TaskController {
@@ -17,10 +19,6 @@ public class TaskController {
     public TaskController(TaskService taskService) {
         this.taskService = taskService;
     }
-
-    // Future Development: Add Get Task By Project
-
-    // TODO Add tests for exceptions
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -34,13 +32,13 @@ public class TaskController {
         return new TaskListDTO(taskService.getTasksByState(state));
     }
 
-    @PutMapping("/project/{projectId}")
+    @PostMapping("/project/{projectId}")
     @ResponseStatus(HttpStatus.CREATED)
     public TaskBaseDTO createTask(@RequestBody TaskBaseDTO task, @PathVariable Integer projectId) {
         return taskService.createTask(task, projectId);
     }
 
-    @PutMapping("/add_tasks/{projectId}")
+    @PostMapping("/add_tasks/{projectId}")
     @ResponseStatus(HttpStatus.CREATED)
     public TaskListDTO addListOfTasks(@RequestBody TaskListDTO tasks, @PathVariable Integer projectId) {
         return new TaskListDTO(taskService.addListOfTasks(tasks, projectId));

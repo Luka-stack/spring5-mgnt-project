@@ -1,7 +1,6 @@
 package com.nisshoku.mgnt.services;
 
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
-import com.nisshoku.mgnt.domain.Language;
 
 import java.util.List;
 
@@ -23,11 +22,11 @@ public interface EmployeeService {
 
     EmployeeDTO patchEmployee(Integer id, EmployeeDTO employeeDTO);
 
-    void addProjectToEmployee(Integer employeeId, Integer projectId);
+    EmployeeDTO addProjectToEmployee(Integer employeeId, Integer projectId);
 
-    void deleteProjectFromEmployee(Integer employeeId, Integer projectId);
+    EmployeeDTO deleteProjectFromEmployee(Integer employeeId, Integer projectId);
 
-    void deleteAllProjectsFromEmployee(Integer employeeId);
+    EmployeeDTO deleteAllProjectsFromEmployee(Integer employeeId);
 
     void deleteEmployeeById(Integer id);
 }

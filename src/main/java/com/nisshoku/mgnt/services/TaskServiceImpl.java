@@ -3,7 +3,6 @@ package com.nisshoku.mgnt.services;
 import com.nisshoku.mgnt.api.v1.domain.task.TaskBaseDTO;
 import com.nisshoku.mgnt.api.v1.domain.task.TaskListDTO;
 import com.nisshoku.mgnt.api.v1.mappers.TaskMapper;
-import com.nisshoku.mgnt.controllers.v1.ProjectController;
 import com.nisshoku.mgnt.controllers.v1.TaskController;
 import com.nisshoku.mgnt.domain.Project;
 import com.nisshoku.mgnt.domain.State;
@@ -96,7 +95,6 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void deleteTaskById(Integer id) {
-
         taskRepository.deleteById(id);
     }
 
