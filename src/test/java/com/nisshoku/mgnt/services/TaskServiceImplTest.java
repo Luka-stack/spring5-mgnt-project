@@ -1,7 +1,8 @@
 package com.nisshoku.mgnt.services;
 
-import com.nisshoku.mgnt.api.v1.domain.task.TaskBaseDTO;
+import com.nisshoku.mgnt.api.v1.domain.task.TaskDTO;
 import com.nisshoku.mgnt.api.v1.mappers.TaskMapper;
+import com.nisshoku.mgnt.domain.Project;
 import com.nisshoku.mgnt.domain.State;
 import com.nisshoku.mgnt.domain.Task;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
@@ -16,7 +17,6 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 public class TaskServiceImplTest {
@@ -48,10 +48,28 @@ public class TaskServiceImplTest {
         when(taskRepository.findAll()).thenReturn(tasks);
 
         // when
-        List<TaskBaseDTO> taskDTOList = taskService.getAllTasks();
+        List<TaskDTO> taskDTOList = taskService.getAllTasks();
 
         // then
         assertEquals(2, taskDTOList.size());
+    }
+
+    @Test
+    public void getTaskById() {
+
+        // given
+        Task task = new Task();
+        task.setTitle(TITLE);
+        task.setProject(new Project());
+        task.setId(ID);
+
+        when(taskRepository.findById(ID)).thenReturn(java.util.Optional.of(task));
+
+        // when
+        TaskDTO taskDTO = taskService.getTaskById(ID);
+
+        // then
+        assertEquals(taskDTO.getStateOfTask(), task.getStateOfTask());
     }
 
     @Test
@@ -71,7 +89,7 @@ public class TaskServiceImplTest {
         when(taskRepository.findByStateOfTask(any())).thenReturn(tasks);
 
         // when
-        List<TaskBaseDTO> dtoList = taskService.getTasksByState("DONE");
+        List<TaskDTO> dtoList = taskService.getTasksByState("DONE");
 
         // then
         assertEquals(2, dtoList.size());

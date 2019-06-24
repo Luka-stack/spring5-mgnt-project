@@ -1,6 +1,6 @@
 package com.nisshoku.mgnt.services;
 
-import com.nisshoku.mgnt.api.v1.domain.task.TaskBaseDTO;
+import com.nisshoku.mgnt.api.v1.domain.task.TaskDTO;
 import com.nisshoku.mgnt.api.v1.domain.task.TaskListDTO;
 import com.nisshoku.mgnt.api.v1.mappers.TaskMapper;
 import com.nisshoku.mgnt.bootstrap.DataLoader;
@@ -52,12 +52,12 @@ public class TaskServiceImplIT {
     @Test
     public void addListOfTasks() {
 
-        TaskBaseDTO firstTask = new TaskBaseDTO();
+        TaskDTO firstTask = new TaskDTO();
         firstTask.setTitle(TITLE);
         firstTask.setDescription(DESCRIPTION);
         firstTask.setStateOfTask(TASK_STATE);
 
-        TaskBaseDTO secondTask = new TaskBaseDTO();
+        TaskDTO secondTask = new TaskDTO();
         secondTask.setTitle(TITLE + "Two");
         secondTask.setDescription(DESCRIPTION + "Two");
         secondTask.setStateOfTask(TASK_STATE);
@@ -77,26 +77,19 @@ public class TaskServiceImplIT {
         assertEquals(beforeProjectsTasks + 2, project.getTasks().size());
     }
 
-/*    @Test
+    @Test
     public void deleteTask() {
 
-        List<Task> beforeDelete = taskRepository.findAll();
-        assertNotNull(beforeDelete);
+        List<Task> taskList = taskRepository.findAll();
+        assertNotNull(taskList);
 
-        for(Task t : beforeDelete)
-            System.out.println(t.getTitle());
+        int beforeTaskSize = taskList.size();
 
-        //taskService.deleteTaskById(beforeDelete.get(2).getId());
-        taskRepository.deleteById(beforeDelete.get(2).getId());
+        taskList = taskRepository.findAll();
+        assertNotNull(taskList);
 
-        List<Task> afterDelete = taskRepository.findAll();
-        assertNotNull(afterDelete);
-
-        for(Task t : afterDelete)
-            System.out.println(t.getTitle());
-
-        //assertEquals(beforeDelete.size()-1, afterDelete.size());
-    }*/
+        assertEquals(beforeTaskSize, taskList.size());
+    }
 
     @Test
     public void createTask() {
@@ -105,15 +98,48 @@ public class TaskServiceImplIT {
         assertNotNull(project);
         int beforeProjectsTasks = project.getTasks().size();
 
-        TaskBaseDTO taskDTO = new TaskBaseDTO();
+        TaskDTO taskDTO = new TaskDTO();
         taskDTO.setTitle(TITLE);
         taskDTO.setDescription(DESCRIPTION);
         taskDTO.setStateOfTask(TASK_STATE);
 
-        TaskBaseDTO savedDTO = taskService.createTask(taskDTO, project.getId());
+        TaskDTO savedDTO = taskService.createTask(project.getId(), taskDTO);
 
         assertEquals(savedDTO.getTitle(), taskDTO.getTitle());
         assertEquals(beforeProjectsTasks + 1, project.getTasks().size());
+    }
+
+    @Test
+    public void updateTask() {
+
+        TaskDTO taskDTO = new TaskDTO();
+        taskDTO.setTitle(TITLE);
+        taskDTO.setDescription(DESCRIPTION);
+        taskDTO.setStateOfTask(TASK_STATE);
+
+        Task taskDB = getValidTask();
+        assertNotNull(taskDB);
+
+        taskService.updateTask(taskDB.getId(), taskDTO);
+
+        assertEquals(TITLE, taskDB.getTitle());
+    }
+
+    @Test
+    public void patchTask() {
+
+        TaskDTO taskDTO = new TaskDTO();
+        taskDTO.setTitle(TITLE);
+
+        Task taskDB = getValidTask();
+        assertNotNull(taskDB);
+
+        String descDB = taskDB.getDescription();
+
+        taskService.patchTask(taskDB.getId(), taskDTO);
+
+        assertEquals(TITLE, taskDB.getTitle());
+        assertEquals(descDB, taskDB.getDescription());
     }
 
     private Project getValidProject() {

@@ -1,15 +1,16 @@
 package com.nisshoku.mgnt.api.v1.domain.task;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskListDTO {
+public class TaskDTO extends TaskBaseDTO {
 
-    List<TaskDTO> tasks;
+    private String projectUrl;
 }

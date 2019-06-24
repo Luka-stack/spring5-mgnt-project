@@ -1,19 +1,25 @@
 package com.nisshoku.mgnt.services;
 
-import com.nisshoku.mgnt.api.v1.domain.task.TaskBaseDTO;
+import com.nisshoku.mgnt.api.v1.domain.task.TaskDTO;
 import com.nisshoku.mgnt.api.v1.domain.task.TaskListDTO;
 
 import java.util.List;
 
 public interface TaskService {
 
-    List<TaskBaseDTO> getAllTasks();
+    List<TaskDTO> getAllTasks();
 
-    List<TaskBaseDTO> getTasksByState(String state);
+    List<TaskDTO> getTasksByState(String state);
 
-    List<TaskBaseDTO> addListOfTasks(TaskListDTO tasks, Integer projectId);
+    List<TaskDTO> addListOfTasks(TaskListDTO tasks, Integer projectId);
 
-    TaskBaseDTO createTask(TaskBaseDTO task, Integer projectId);
+    TaskDTO getTaskById(Integer id);
+
+    TaskDTO createTask(Integer projectId, TaskDTO task);
+
+    TaskDTO patchTask(Integer id, TaskDTO task);
+
+    TaskDTO updateTask(Integer id, TaskDTO task);
 
     void deleteTaskById(Integer id);
 }

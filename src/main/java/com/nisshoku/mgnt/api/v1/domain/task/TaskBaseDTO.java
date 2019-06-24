@@ -14,4 +14,5 @@ public class TaskBaseDTO {
     private String title;
     private String description;
     private State stateOfTask;
+    private String taskUrl;
 }
