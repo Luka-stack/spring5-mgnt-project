@@ -127,8 +127,6 @@ public class ProjectControllerIT {
                 .andExpect(jsonPath("$.projectUrl", equalTo(ProjectController.URL_BASE + "/1")));
     }
 
-    //TODO DEAL WITH BAD REQUEST
-
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     public void patchProject_NotFound() throws Exception {
@@ -452,4 +450,27 @@ public class ProjectControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    public void getProjectsByYear_Conflict() throws Exception {
+
+        when(projectService.getProjectsByYear("aaa")).thenThrow(new IllegalArgumentException());
+
+        mockMvc.perform(get(ProjectController.URL_BASE + "/year/aaa")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void getProjectsByState_Conflict() throws Exception {
+
+        when(projectService.getProjectsByState(any())).thenThrow(new IllegalArgumentException());
+
+        mockMvc.perform(get(ProjectController.URL_BASE + "/state/aaaa")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+    }
+
 }
