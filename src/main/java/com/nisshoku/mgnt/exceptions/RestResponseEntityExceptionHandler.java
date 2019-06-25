@@ -175,6 +175,9 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
             builder.append("Available states are: ");
             builder.append(Arrays.toString(State.values()));
         }
+        else {
+            builder.append("You parameter are wrong. You should change it.");
+        }
 
         final ApiError response = new ApiError(HttpStatus.CONFLICT, ex.getLocalizedMessage(), builder.toString());
 

@@ -13,7 +13,10 @@ import com.nisshoku.mgnt.exceptions.ResourceNotFoundException;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
 import com.nisshoku.mgnt.repositories.TaskRepository;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -94,7 +97,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectDTO> getProjectsByYear(String year) {
+    public List<ProjectDTO> getProjectsByYear(String year){
 
         // Temporal solution
         Date fromDate = null;
@@ -103,8 +106,7 @@ public class ProjectServiceImpl implements ProjectService {
             fromDate = new SimpleDateFormat("yyyy-MM-dd").parse(year + "-01-01");
             tillDate = new SimpleDateFormat("yyy-MM-dd").parse(year + "-12-31");
         } catch (ParseException e) {
-            // TODO implement exception
-            throw new RuntimeException("Bad Year");
+            throw new IllegalArgumentException("You have entered bad year: '"+year+"'");
         }
 
         return projectRepository.findByYear(fromDate, tillDate)
