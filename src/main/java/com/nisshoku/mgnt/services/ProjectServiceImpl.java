@@ -2,7 +2,9 @@ package com.nisshoku.mgnt.services;
 
 import com.nisshoku.mgnt.api.v1.domain.project.ProjectDTO;
 import com.nisshoku.mgnt.api.v1.mappers.ProjectMapper;
+import com.nisshoku.mgnt.controllers.v1.EmployeeController;
 import com.nisshoku.mgnt.controllers.v1.ProjectController;
+import com.nisshoku.mgnt.controllers.v1.TaskController;
 import com.nisshoku.mgnt.domain.Employee;
 import com.nisshoku.mgnt.domain.Project;
 import com.nisshoku.mgnt.domain.State;
@@ -44,6 +46,8 @@ public class ProjectServiceImpl implements ProjectService {
                 .map(project -> {
                     ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
                     projectDTO.setProjectUrl(getProjectUrl(project.getId()));
+                    projectDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
+                    projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
 
                     return projectDTO;
                 })
@@ -57,6 +61,8 @@ public class ProjectServiceImpl implements ProjectService {
                 .map(project -> {
                     ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
                     projectDTO.setProjectUrl(getProjectUrl(project.getId()));
+                    projectDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
+                    projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
 
                     return projectDTO;
                 }).orElseThrow(() ->
@@ -76,6 +82,8 @@ public class ProjectServiceImpl implements ProjectService {
                     .map(project -> {
                         ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
                         projectDTO.setProjectUrl(getProjectUrl(project.getId()));
+                        projectDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
+                        projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
 
                         return projectDTO;
                     }).collect(Collectors.toList());
@@ -104,6 +112,8 @@ public class ProjectServiceImpl implements ProjectService {
                 .map(project -> {
                     ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
                     projectDTO.setProjectUrl(getProjectUrl(project.getId()));
+                    projectDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
+                    projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
 
                     return projectDTO;
                 })
@@ -118,6 +128,8 @@ public class ProjectServiceImpl implements ProjectService {
                 .map(project -> {
                     ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
                     projectDTO.setProjectUrl(getProjectUrl(project.getId()));
+                    projectDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
+                    projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
 
                     return projectDTO;
                 }).orElseThrow(() ->
@@ -133,6 +145,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectDTO savedDTO = projectMapper.projectToProjectDTO(savedProject);
         savedDTO.setProjectUrl(getProjectUrl(savedProject.getId()));
+        savedDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
+        savedDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
 
         return savedDTO;
     }
@@ -145,6 +159,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectDTO savedProject = projectMapper.projectToProjectDTO(projectRepository.save(project));
         savedProject.setProjectUrl(getProjectUrl(id));
+        savedProject.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
+        savedProject.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
 
         return savedProject;
     }
@@ -180,6 +196,8 @@ public class ProjectServiceImpl implements ProjectService {
 
             ProjectDTO savedDTO = projectMapper.projectToProjectDTO(projectRepository.save(project));
             savedDTO.setProjectUrl(getProjectUrl(id));
+            savedDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
+            savedDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
 
             return savedDTO;
         }).orElseThrow(() ->
@@ -217,7 +235,8 @@ public class ProjectServiceImpl implements ProjectService {
         employeeRepository.save(employee);
         ProjectDTO projectDTO = projectMapper.projectToProjectDTO(projectRepository.save(project));
         projectDTO.setProjectUrl(getProjectUrl(projectId));
-        //projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
+        projectDTO.getTasks().forEach(taskDTO -> taskDTO.setTaskUrl(getTaskUrl(taskDTO.getId())));
+        projectDTO.getEmployees().forEach(employeeDTO -> employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeDTO.getId())));
 
         return projectDTO;
     }
@@ -241,7 +260,8 @@ public class ProjectServiceImpl implements ProjectService {
         employeeRepository.save(employee);
         ProjectDTO projectDTO = projectMapper.projectToProjectDTO(projectRepository.save(project));
         projectDTO.setProjectUrl(getProjectUrl(projectId));
-        //projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
+        projectDTO.getTasks().forEach(taskDTO -> taskDTO.setTaskUrl(getTaskUrl(taskDTO.getId())));
+        projectDTO.getEmployees().forEach(employeeDTO -> employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeDTO.getId())));
 
         return projectDTO;
     }
@@ -262,7 +282,8 @@ public class ProjectServiceImpl implements ProjectService {
         project.setEmployees(new HashSet<>());
         ProjectDTO projectDTO = projectMapper.projectToProjectDTO(projectRepository.save(project));
         projectDTO.setProjectUrl(getProjectUrl(projectId));
-        //projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
+        projectDTO.getTasks().forEach(taskDTO -> taskDTO.setTaskUrl(getTaskUrl(taskDTO.getId())));
+        projectDTO.getEmployees().forEach(employeeDTO -> employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeDTO.getId())));
 
         return projectDTO;
     }
@@ -285,7 +306,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
         projectDTO.setProjectUrl(getProjectUrl(projectId));
-        //projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
+        projectDTO.getTasks().forEach(taskDTO -> taskDTO.setTaskUrl(getTaskUrl(taskDTO.getId())));
+        projectDTO.getEmployees().forEach(employeeDTO -> employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeDTO.getId())));
 
         return projectDTO;
     }
@@ -305,7 +327,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
         projectDTO.setProjectUrl(getProjectUrl(projectId));
-        //projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
+        projectDTO.getTasks().forEach(taskDTO -> taskDTO.setTaskUrl(getTaskUrl(taskDTO.getId())));
+        projectDTO.getEmployees().forEach(employeeDTO -> employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeDTO.getId())));
 
         return projectDTO;
     }
@@ -313,4 +336,9 @@ public class ProjectServiceImpl implements ProjectService {
     private String getProjectUrl(Integer id) {
         return ProjectController.URL_BASE + "/" + id;
     }
+
+    private String getTaskUrl(Integer id) { return TaskController.BASE_URL + "/" + id; }
+
+    private String getEmployeeUrl(Integer id) { return EmployeeController.BASE_URL + "/" + id; }
+
 }

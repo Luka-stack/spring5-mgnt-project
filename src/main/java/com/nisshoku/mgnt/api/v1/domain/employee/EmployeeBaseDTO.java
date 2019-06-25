@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EmployeeBaseDTO {
 
-    // TODO Think about adding ID to DTO for easy access in Controller
-
+    private Integer id;
     private String firstName;
     private String lastName;
     private String email;

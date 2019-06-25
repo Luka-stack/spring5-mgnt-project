@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TaskBaseDTO {
 
-    // TODO Think about adding ID to DTO for easy access in Controller
+    private Integer id;
     private String title;
     private String description;
     private State stateOfTask;

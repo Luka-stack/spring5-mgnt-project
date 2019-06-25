@@ -1,6 +1,5 @@
 package com.nisshoku.mgnt.services;
 
-import com.nisshoku.mgnt.api.v1.domain.project.ProjectBaseDTO;
 import com.nisshoku.mgnt.api.v1.domain.employee.EmployeeDTO;
 import com.nisshoku.mgnt.api.v1.mappers.EmployeeMapper;
 import com.nisshoku.mgnt.controllers.v1.EmployeeController;
@@ -39,9 +38,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .map(employee -> {
                     EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
                     employeeDTO.setEmployeeUrl(getEmployeeUrl(employee.getId()));
-
-                    for (ProjectBaseDTO project : employeeDTO.getProjects())
-                        project.setProjectUrl(getProjectUrl(project.getTitle()));
+                    employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
 
                     return employeeDTO;
                 })
@@ -55,8 +52,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
             EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
             employeeDTO.setEmployeeUrl(getEmployeeUrl(id));
-            for (ProjectBaseDTO project : employeeDTO.getProjects())
-                project.setProjectUrl(getProjectUrl(project.getTitle()));
+            employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
 
             return employeeDTO;
         }).orElseThrow(() ->
@@ -76,9 +72,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .map(employee -> {
                         EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
                         employeeDTO.setEmployeeUrl(getEmployeeUrl(employee.getId()));
-
-                        for (ProjectBaseDTO project : employeeDTO.getProjects())
-                            project.setProjectUrl(getProjectUrl(project.getTitle()));
+                        employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
 
                         return employeeDTO;
                     }).collect(Collectors.toList());
@@ -96,9 +90,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .map(employee -> {
                     EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
                     employeeDTO.setEmployeeUrl(getEmployeeUrl(employee.getId()));
-
-                    for (ProjectBaseDTO project : employeeDTO.getProjects())
-                        project.setProjectUrl(getProjectUrl(project.getTitle()));
+                    employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
 
                     return employeeDTO;
                 }).collect(Collectors.toList());
@@ -111,6 +103,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
 
         returnedDTO.setEmployeeUrl(getEmployeeUrl(savedEmployee.getId()));
+        returnedDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
 
         return returnedDTO;
     }
@@ -130,7 +123,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
 
         returnedDTO.setEmployeeUrl(getEmployeeUrl(savedEmployee.getId()));
-        returnedDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
+        returnedDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
 
         if (employee.getProjects() != null && employee.getProjects().size() > 0) {
             employee.getProjects().forEach(project -> {
@@ -153,7 +146,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
 
         returnedDTO.setEmployeeUrl(getEmployeeUrl(savedEmployee.getId()));
-        returnedDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
+        returnedDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
 
         return returnedDTO;
     }
@@ -187,7 +180,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
             EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(employee);
             returnedDTO.setEmployeeUrl(getEmployeeUrl(id));
-            returnedDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
+            returnedDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
 
             return returnedDTO;
         }).orElseThrow(() ->
@@ -214,7 +207,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         projectRepository.save(foundProject);
         EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employeeRepository.save(employee));
         employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeId));
-        employeeDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
+        employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
 
         return employeeDTO;
     }
@@ -242,7 +235,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.getProjects().remove(foundProject);
         EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employeeRepository.save(employee));
         employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeId));
-        employeeDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
+        employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
 
         return employeeDTO;
     }
@@ -264,7 +257,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
         employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeId));
-        employeeDTO.getProjects().forEach(project -> project.setProjectUrl(getProjectUrl(project.getTitle())));
+        employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
 
         return employeeDTO;
     }
@@ -280,9 +273,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.delete(employee);
     }
 
-    // TODO you know what you should do
-    private String getProjectUrl(String title) {
-        return ProjectController.URL_BASE + "/" + title.toLowerCase();
+    private String getProjectUrl(Integer id) {
+        return ProjectController.URL_BASE + "/" + id;
     }
 
     private String getEmployeeUrl(Integer id) {
