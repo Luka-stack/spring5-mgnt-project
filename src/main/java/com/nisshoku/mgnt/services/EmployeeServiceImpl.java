@@ -272,7 +272,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void deleteEmployeeById(Integer id) {
 
-        employeeRepository.deleteById(id);
+        Employee employee = employeeRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Employee with id:"+ id +" doesn't exist",
+                        EmployeeController.BASE_URL + "/{projectId}")
+        );
+
+        employeeRepository.delete(employee);
     }
 
     // TODO you know what you should do

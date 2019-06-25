@@ -190,7 +190,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void deleteProjectById(Integer id) {
-        projectRepository.deleteById(id);
+
+        Project project = projectRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Project with id:"+id+" doesn't exist",
+                        ProjectController.URL_BASE + "/{project_id}"));
+
+        projectRepository.delete(project);
     }
 
     @Override
