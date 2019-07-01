@@ -5,6 +5,7 @@ import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
 import com.nisshoku.mgnt.repositories.TaskRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -13,6 +14,7 @@ import java.time.YearMonth;
 import java.util.Date;
 
 @Component
+@Profile("h2d")
 public class DataLoader implements CommandLineRunner {
 
     private final EmployeeRepository employeeRepository;
