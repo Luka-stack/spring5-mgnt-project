@@ -121,6 +121,8 @@ public class TaskServiceImpl implements TaskService {
         Task taskToSave = taskMapper.taskBaseDTOToTask(task);
 
         project.getTasks().add(taskToSave);
+        taskToSave.setProject(project);
+
         TaskDTO savedTask = taskMapper.taskToTaskDTO(taskRepository.save(taskToSave));
         savedTask.setTaskUrl(getTaskUrl(taskToSave.getId()));
         savedTask.setProjectUrl(getProjectUrl(projectId));
@@ -131,12 +133,18 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskDTO updateTask(Integer id, TaskDTO taskDTO) {
 
-        Task task = taskMapper.taskBaseDTOToTask(taskDTO);
-        task.setId(id);
+       Task taskToUpdate = taskRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Task with id: " + id + " doesn't exist",
+                        TaskController.BASE_URL+ "/{taskId}")
+        );
 
-        TaskDTO savedTask = taskMapper.taskToTaskDTO(taskRepository.save(task));
+        taskToUpdate.setTitle(taskDTO.getTitle());
+        taskToUpdate.setDescription(taskDTO.getDescription());
+        taskToUpdate.setStateOfTask(taskDTO.getStateOfTask());
+
+        TaskDTO savedTask = taskMapper.taskToTaskDTO(taskRepository.save(taskToUpdate));
         savedTask.setTaskUrl(getTaskUrl(id));
-        savedTask.setProjectUrl(getProjectUrl(task.getProject().getId()));
+        savedTask.setProjectUrl(getProjectUrl(taskToUpdate.getProject().getId()));
 
         return savedTask;
     }

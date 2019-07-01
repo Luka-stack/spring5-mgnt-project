@@ -224,15 +224,18 @@ public class EmployeeServiceImpl implements EmployeeService {
                         EmployeeController.BASE_URL + "{employeeId}/delete_project/{projectId}")
         );
 
-        employee.getProjects().forEach(project -> {
+/*        employee.getProjects().forEach(project -> {
 
             if (project.getId().equals(projectId)) {
                 project.getEmployees().remove(employee);
                 projectRepository.save(project);
             }
-        });
+        });*/
 
+        foundProject.getEmployees().remove(employee);
         employee.getProjects().remove(foundProject);
+        projectRepository.save(foundProject);
+
         EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employeeRepository.save(employee));
         employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeId));
         employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));

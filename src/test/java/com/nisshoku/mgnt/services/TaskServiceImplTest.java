@@ -42,8 +42,18 @@ public class TaskServiceImplTest {
     @Test
     public void getAllTask() {
 
+        Task task = new Task();
+        task.setTitle(TITLE);
+        task.setProject(new Project());
+        task.setId(ID);
+
+        Task task2 = new Task();
+        task2.setTitle(TITLE + 2);
+        task2.setProject(new Project());
+        task2.setId(ID + 1);
+
         // given
-        List<Task> tasks = Arrays.asList(new Task(), new Task());
+        List<Task> tasks = Arrays.asList(task, task2);
 
         when(taskRepository.findAll()).thenReturn(tasks);
 
@@ -78,10 +88,12 @@ public class TaskServiceImplTest {
         // given
         Task task = new Task();
         task.setId(ID);
+        task.setProject(new Project());
         task.setStateOfTask(State.DONE);
 
         Task task2 = new Task();
-        task2.setId(ID);
+        task2.setId(ID + 1);
+        task2.setProject(new Project());
         task2.setStateOfTask(State.DONE);
 
         List<Task> tasks = Arrays.asList(task, task2);

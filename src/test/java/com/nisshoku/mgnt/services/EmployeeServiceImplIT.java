@@ -140,17 +140,16 @@ public class EmployeeServiceImplIT {
     public void deleteProjectFromEmployee() {
 
         int employeeId = getEmployeeIdValue();
+
         Employee employee = employeeRepository.findById(employeeId).get();
         assertNotNull(employee);
+        int oldSize = employee.getProjects().size();
 
-        Optional<Project> project = employee.getProjects().stream().findAny();
-        Project projectFound = project.get();
-        int oldProjectsSize = employee.getProjects().size();
+        int projectID = employee.getProjects().stream().findAny().get().getId();
+        employeeService.deleteProjectFromEmployee(employeeId, projectID);
 
-        employeeService.deleteProjectFromEmployee(employee.getId(), projectFound.getId());
-
-        //assertNotEquals(oldProjectsSize, employee.getProjects().size());
-        assertEquals(oldProjectsSize-1, employee.getProjects().size());
+        assertNotEquals(oldSize, employee.getProjects().size());
+        assertEquals(oldSize-1, employee.getProjects().size());
     }
 
     @Test
