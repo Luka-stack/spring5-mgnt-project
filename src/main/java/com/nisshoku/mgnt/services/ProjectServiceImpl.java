@@ -13,16 +13,12 @@ import com.nisshoku.mgnt.exceptions.ResourceNotFoundException;
 import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
 import com.nisshoku.mgnt.repositories.TaskRepository;
-import org.springframework.dao.DataAccessException;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,14 +42,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         return projectRepository.findAll()
                 .stream()
-                .map(project -> {
-                    ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
-                    projectDTO.setProjectUrl(getProjectUrl(project.getId()));
-                    projectDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
-                    projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
-
-                    return projectDTO;
-                })
+                .map(this::setAllUrl)
                 .collect(Collectors.toList());
     }
 
@@ -61,14 +50,7 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectDTO getProjectById(Integer id) {
 
         return projectRepository.findById(id)
-                .map(project -> {
-                    ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
-                    projectDTO.setProjectUrl(getProjectUrl(project.getId()));
-                    projectDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
-                    projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
-
-                    return projectDTO;
-                }).orElseThrow(() ->
+                .map(this::setAllUrl).orElseThrow(() ->
                         new ResourceNotFoundException("Project with id:"+id+" doesn't exist",
                                                       ProjectController.URL_BASE + "/{project_id}")
                 );
@@ -82,14 +64,7 @@ public class ProjectServiceImpl implements ProjectService {
 
             return projectRepository.findByStateOfProject(stateSearch)
                     .stream()
-                    .map(project -> {
-                        ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
-                        projectDTO.setProjectUrl(getProjectUrl(project.getId()));
-                        projectDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
-                        projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
-
-                        return projectDTO;
-                    }).collect(Collectors.toList());
+                    .map(this::setAllUrl).collect(Collectors.toList());
         }
         catch (IllegalArgumentException error) {
             throw new IllegalArgumentException("Project state: "+state +" does not exist Database");
@@ -111,14 +86,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         return projectRepository.findByYear(fromDate, tillDate)
                 .stream()
-                .map(project -> {
-                    ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
-                    projectDTO.setProjectUrl(getProjectUrl(project.getId()));
-                    projectDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
-                    projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
-
-                    return projectDTO;
-                })
+                .map(this::setAllUrl)
                 .collect(Collectors.toList());
 
     }
@@ -127,14 +95,7 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectDTO getProjectByTitle(String title) {
 
         return projectRepository.findByTitle(title)
-                .map(project -> {
-                    ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
-                    projectDTO.setProjectUrl(getProjectUrl(project.getId()));
-                    projectDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
-                    projectDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
-
-                    return projectDTO;
-                }).orElseThrow(() ->
+                .map(this::setAllUrl).orElseThrow(() ->
                         new ResourceNotFoundException("Project with title:"+title+" doesn't exist",
                                                       ProjectController.URL_BASE + "/title/{title}")
                 );
@@ -144,13 +105,7 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectDTO createProject(ProjectDTO projectDTO) {
 
         Project savedProject = projectRepository.save(projectMapper.projectDTOToProject(projectDTO));
-
-        ProjectDTO savedDTO = projectMapper.projectToProjectDTO(savedProject);
-        savedDTO.setProjectUrl(getProjectUrl(savedProject.getId()));
-        savedDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
-        savedDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
-
-        return savedDTO;
+        return setAllUrl(savedProject);
     }
 
     @Override
@@ -159,12 +114,8 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectMapper.projectDTOToProject(projectDTO);
         project.setId(id);
 
-        ProjectDTO savedProject = projectMapper.projectToProjectDTO(projectRepository.save(project));
-        savedProject.setProjectUrl(getProjectUrl(id));
-        savedProject.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
-        savedProject.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
-
-        return savedProject;
+        Project savedProject = projectRepository.save(project);
+        return setAllUrl(savedProject);
     }
 
     @Override
@@ -196,12 +147,8 @@ public class ProjectServiceImpl implements ProjectService {
                 project.setCost(projectDTO.getCost());
             }
 
-            ProjectDTO savedDTO = projectMapper.projectToProjectDTO(projectRepository.save(project));
-            savedDTO.setProjectUrl(getProjectUrl(id));
-            savedDTO.getTasks().forEach(task -> task.setTaskUrl(getTaskUrl(task.getId())));
-            savedDTO.getEmployees().forEach(employee -> employee.setEmployeeUrl(getEmployeeUrl(employee.getId())));
-
-            return savedDTO;
+            Project savedProject = projectRepository.save(project);
+            return setAllUrl(savedProject);
         }).orElseThrow(() ->
                 new ResourceNotFoundException("Project with id:"+id+" doesn't exist",
                         ProjectController.URL_BASE + "/{projectId}")
@@ -235,12 +182,9 @@ public class ProjectServiceImpl implements ProjectService {
         employee.getProjects().add(project);
 
         employeeRepository.save(employee);
-        ProjectDTO projectDTO = projectMapper.projectToProjectDTO(projectRepository.save(project));
-        projectDTO.setProjectUrl(getProjectUrl(projectId));
-        projectDTO.getTasks().forEach(taskDTO -> taskDTO.setTaskUrl(getTaskUrl(taskDTO.getId())));
-        projectDTO.getEmployees().forEach(employeeDTO -> employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeDTO.getId())));
+        Project projectSaved = projectRepository.save(project);
 
-        return projectDTO;
+        return setAllUrl(projectSaved);
     }
 
     @Override
@@ -260,12 +204,9 @@ public class ProjectServiceImpl implements ProjectService {
         employee.getProjects().remove(project);
 
         employeeRepository.save(employee);
-        ProjectDTO projectDTO = projectMapper.projectToProjectDTO(projectRepository.save(project));
-        projectDTO.setProjectUrl(getProjectUrl(projectId));
-        projectDTO.getTasks().forEach(taskDTO -> taskDTO.setTaskUrl(getTaskUrl(taskDTO.getId())));
-        projectDTO.getEmployees().forEach(employeeDTO -> employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeDTO.getId())));
+        Project projectSaved = projectRepository.save(project);
 
-        return projectDTO;
+        return setAllUrl(projectSaved);
     }
 
     @Override
@@ -281,13 +222,10 @@ public class ProjectServiceImpl implements ProjectService {
             employeeRepository.save(employee);
         });
 
-        project.setEmployees(new HashSet<>());
-        ProjectDTO projectDTO = projectMapper.projectToProjectDTO(projectRepository.save(project));
-        projectDTO.setProjectUrl(getProjectUrl(projectId));
-        projectDTO.getTasks().forEach(taskDTO -> taskDTO.setTaskUrl(getTaskUrl(taskDTO.getId())));
-        projectDTO.getEmployees().forEach(employeeDTO -> employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeDTO.getId())));
+        project.getEmployees().clear();
+        Project projectSaved = projectRepository.save(project);
 
-        return projectDTO;
+        return setAllUrl(projectSaved);
     }
 
     @Override
@@ -306,12 +244,7 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
 
-        ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
-        projectDTO.setProjectUrl(getProjectUrl(projectId));
-        projectDTO.getTasks().forEach(taskDTO -> taskDTO.setTaskUrl(getTaskUrl(taskDTO.getId())));
-        projectDTO.getEmployees().forEach(employeeDTO -> employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeDTO.getId())));
-
-        return projectDTO;
+        return setAllUrl(project);
     }
 
     @Override
@@ -322,25 +255,24 @@ public class ProjectServiceImpl implements ProjectService {
                         ProjectController.URL_BASE + "/{projectId}/clear_tasks")
         );
 
-        project.getTasks().forEach(task -> {
-            project.getTasks().remove(task);
-            taskRepository.deleteById(task.getId());
-        });
+        List<Task> taskList = new CopyOnWriteArrayList<>(project.getTasks());
+
+        for (Task tk : taskList) {
+            project.getTasks().remove(tk);
+            taskRepository.delete(tk);
+        }
+
+        return setAllUrl(project);
+    }
+
+    private ProjectDTO setAllUrl(Project project) {
 
         ProjectDTO projectDTO = projectMapper.projectToProjectDTO(project);
-        projectDTO.setProjectUrl(getProjectUrl(projectId));
-        projectDTO.getTasks().forEach(taskDTO -> taskDTO.setTaskUrl(getTaskUrl(taskDTO.getId())));
-        projectDTO.getEmployees().forEach(employeeDTO -> employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeDTO.getId())));
+        projectDTO.setProjectUrl(ProjectController.URL_BASE + "/" + project.getId());
+        projectDTO.getTasks().forEach(task -> task.setTaskUrl(TaskController.BASE_URL + "/" + task.getId()));
+        projectDTO.getEmployees().forEach(employee ->
+                employee.setEmployeeUrl(EmployeeController.BASE_URL + "/" + employee.getId()));
 
         return projectDTO;
     }
-
-    private String getProjectUrl(Integer id) {
-        return ProjectController.URL_BASE + "/" + id;
-    }
-
-    private String getTaskUrl(Integer id) { return TaskController.BASE_URL + "/" + id; }
-
-    private String getEmployeeUrl(Integer id) { return EmployeeController.BASE_URL + "/" + id; }
-
 }

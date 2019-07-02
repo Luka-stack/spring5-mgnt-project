@@ -12,7 +12,6 @@ import com.nisshoku.mgnt.repositories.EmployeeRepository;
 import com.nisshoku.mgnt.repositories.ProjectRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,27 +34,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return employeeRepository.findAll()
                 .stream()
-                .map(employee -> {
-                    EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
-                    employeeDTO.setEmployeeUrl(getEmployeeUrl(employee.getId()));
-                    employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
-
-                    return employeeDTO;
-                })
+                .map(this::setAllUrl)
                 .collect(Collectors.toList());
     }
 
     @Override
     public EmployeeDTO getEmployeeById(Integer id) {
 
-        return employeeRepository.findById(id).map(employee -> {
-
-            EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
-            employeeDTO.setEmployeeUrl(getEmployeeUrl(id));
-            employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
-
-            return employeeDTO;
-        }).orElseThrow(() ->
+        return employeeRepository.findById(id).map(this::setAllUrl).orElseThrow(() ->
                 new ResourceNotFoundException("Employee with id:"+id+" doesn't exist",
                 EmployeeController.BASE_URL + "/{employee_id}")
         );
@@ -69,13 +55,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
             return employeeRepository.findByFavoriteLanguage(languageSearch)
                     .stream()
-                    .map(employee -> {
-                        EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
-                        employeeDTO.setEmployeeUrl(getEmployeeUrl(employee.getId()));
-                        employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
-
-                        return employeeDTO;
-                    }).collect(Collectors.toList());
+                    .map(this::setAllUrl).collect(Collectors.toList());
         }
         catch (IllegalArgumentException error) {
             throw new IllegalArgumentException("Favorite language: "+language+"does not exist in Database");
@@ -87,25 +67,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return employeeRepository.findByLastName(lastName)
                 .stream()
-                .map(employee -> {
-                    EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
-                    employeeDTO.setEmployeeUrl(getEmployeeUrl(employee.getId()));
-                    employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
-
-                    return employeeDTO;
-                }).collect(Collectors.toList());
+                .map(this::setAllUrl).collect(Collectors.toList());
     }
 
     @Override
     public EmployeeDTO createNewEmployee(EmployeeDTO employeeDTO) {
 
         Employee savedEmployee = employeeRepository.save(employeeMapper.employeeDTOToEmployee(employeeDTO));
-        EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
 
-        returnedDTO.setEmployeeUrl(getEmployeeUrl(savedEmployee.getId()));
-        returnedDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
-
-        return returnedDTO;
+        return setAllUrl(savedEmployee);
     }
 
     @Override
@@ -120,10 +90,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.getProjects().add(projectDB);
 
         Employee savedEmployee = employeeRepository.save(employee);
-        EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
-
-        returnedDTO.setEmployeeUrl(getEmployeeUrl(savedEmployee.getId()));
-        returnedDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
 
         if (employee.getProjects() != null && employee.getProjects().size() > 0) {
             employee.getProjects().forEach(project -> {
@@ -133,7 +99,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             });
         }
 
-        return returnedDTO;
+        return setAllUrl(savedEmployee);
     }
 
     @Override
@@ -143,12 +109,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setId(id);
 
         Employee savedEmployee = employeeRepository.save(employee);
-        EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(savedEmployee);
 
-        returnedDTO.setEmployeeUrl(getEmployeeUrl(savedEmployee.getId()));
-        returnedDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
-
-        return returnedDTO;
+        return setAllUrl(savedEmployee);
     }
 
     @Override
@@ -178,11 +140,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
             employeeRepository.save(employee);
 
-            EmployeeDTO returnedDTO = employeeMapper.employeeToEmployeeDTO(employee);
-            returnedDTO.setEmployeeUrl(getEmployeeUrl(id));
-            returnedDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
-
-            return returnedDTO;
+            return setAllUrl(employee);
         }).orElseThrow(() ->
                 new ResourceNotFoundException("Employee with id:"+id+" doesn't exist",
                                                EmployeeController.BASE_URL + "/{employee_id}")
@@ -205,11 +163,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         foundProject.getEmployees().add(employee);
 
         projectRepository.save(foundProject);
-        EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employeeRepository.save(employee));
-        employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeId));
-        employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
+        Employee savedEmployee = employeeRepository.save(employee);
 
-        return employeeDTO;
+        return setAllUrl(savedEmployee);
     }
 
     @Override
@@ -224,23 +180,13 @@ public class EmployeeServiceImpl implements EmployeeService {
                         EmployeeController.BASE_URL + "{employeeId}/delete_project/{projectId}")
         );
 
-/*        employee.getProjects().forEach(project -> {
-
-            if (project.getId().equals(projectId)) {
-                project.getEmployees().remove(employee);
-                projectRepository.save(project);
-            }
-        });*/
-
         foundProject.getEmployees().remove(employee);
         employee.getProjects().remove(foundProject);
         projectRepository.save(foundProject);
 
-        EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employeeRepository.save(employee));
-        employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeId));
-        employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
+        Employee savedEmployee = employeeRepository.save(employee);
 
-        return employeeDTO;
+        return setAllUrl(savedEmployee);
     }
 
     @Override
@@ -256,13 +202,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             projectRepository.save(project);
         });
 
-        employee.setProjects(new HashSet<>());
+        //employee.setProjects(new HashSet<>());
+        employee.getProjects().clear();
 
-        EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
-        employeeDTO.setEmployeeUrl(getEmployeeUrl(employeeId));
-        employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(getProjectUrl(projectDTO.getId())));
-
-        return employeeDTO;
+        return setAllUrl(employee);
     }
 
     @Override
@@ -276,11 +219,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.delete(employee);
     }
 
-    private String getProjectUrl(Integer id) {
-        return ProjectController.URL_BASE + "/" + id;
-    }
+    private EmployeeDTO setAllUrl(Employee employee) {
 
-    private String getEmployeeUrl(Integer id) {
-        return EmployeeController.BASE_URL + "/" + id;
+        EmployeeDTO employeeDTO = employeeMapper.employeeToEmployeeDTO(employee);
+        employeeDTO.setEmployeeUrl(ProjectController.URL_BASE + "/" + employee.getId());
+        employeeDTO.getProjects().forEach(projectDTO -> projectDTO.setProjectUrl(ProjectController.URL_BASE + "/" + projectDTO.getId()));
+
+        return employeeDTO;
     }
 }
